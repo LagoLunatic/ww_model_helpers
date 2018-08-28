@@ -34,7 +34,7 @@ def convert_to_bmd(base_folder, file_base_name, superbmd_folder="SuperBMD"):
   
   if result != 0:
     input()
-    exit()
+    sys.exit(1)
   
   return (out_bmd_path, out_bdl_path)
 
@@ -217,8 +217,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
 if __name__ == "__main__":
   if len(sys.argv) != 5 or sys.argv[1] != "-link" or sys.argv[3] != "-custom":
     print("Invalid arguments. Proper format:")
-    print("python convert.py -link \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
-    exit()
+    print("  pack_player -link \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
+    sys.exit(1)
   orig_link_folder = sys.argv[2]
   custom_player_folder = sys.argv[4]
   if not os.path.isdir(orig_link_folder):

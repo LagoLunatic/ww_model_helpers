@@ -54,13 +54,13 @@ def extract_model_or_texture(file_entry, base_output_folder):
     
     if result != 0:
       input()
-      exit()
+      sys.exit(1)
 
 if __name__ == "__main__":
   if len(sys.argv) != 2:
     print("Invalid arguments. Proper format:")
-    print("python extract_models.py \"Path/To/Archive.arc\"")
-    exit()
+    print("  extract_models \"Path/To/Archive.arc\"")
+    sys.exit(1)
   rarc_path = sys.argv[1]
   if not os.path.isfile(rarc_path):
     print("Archive does not exist: %s" % rarc_path)
