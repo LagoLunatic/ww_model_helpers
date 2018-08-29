@@ -185,8 +185,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
     texture.save_changes()
     casual_tex_bti = os.path.join(custom_player_folder, "casual_clothes_texture.bti")
     with open(casual_tex_bti, "wb") as f:
-      texture.file_entry.seek(0)
-      f.write(texture.file_entry.read())
+      texture.file_entry.data.seek(0)
+      f.write(texture.file_entry.data.read())
   
   # Import casual_clothes_texture.bti
   casual_tex_bti = os.path.join(custom_player_folder, "casual_clothes_texture.bti")
