@@ -42,7 +42,7 @@ def extract_model_or_texture(file_entry, base_output_folder):
   if file_ext == ".bti":
     output_png_name = os.path.join(output_folder, file_basename + ".png")
     bti = BTIFile(file_entry)
-    bti.render(output_png_name)
+    bti.render().save(output_png_name)
   else:
     superbmd_folder = "SuperBMD"
     command = [
