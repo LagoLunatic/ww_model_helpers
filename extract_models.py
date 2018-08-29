@@ -15,9 +15,7 @@ def extract_all_models(rarc_path, filenames):
   
   rarc_basename = os.path.splitext(os.path.basename(rarc_path))[0]
   rarc_containing_folder = os.path.dirname(rarc_path)
-  base_output_folder = os.path.join(rarc_containing_folder, rarc_basename + "_extracted")
-  if not os.path.isdir(base_output_folder):
-    os.mkdir(base_output_folder)
+  base_output_folder = rarc_containing_folder
   
   invalid_filenames = []
   for filename in filenames:
