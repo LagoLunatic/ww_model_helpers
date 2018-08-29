@@ -8,7 +8,7 @@ sys.path.insert(0, "./wwrando")
 from wwlib.rarc import RARC
 from wwlib.bti import BTIFile
 
-def extract_all_models(rarc_path):
+def extract_all_models(rarc_path, filenames):
   with open(rarc_path, "rb") as f:
     data = BytesIO(f.read())
   rarc = RARC(data)
@@ -16,9 +16,21 @@ def extract_all_models(rarc_path):
   rarc_basename = os.path.splitext(os.path.basename(rarc_path))[0]
   rarc_containing_folder = os.path.dirname(rarc_path)
   base_output_folder = os.path.join(rarc_containing_folder, rarc_basename + "_extracted")
-  os.mkdir(base_output_folder)
+  if not os.path.isdir(base_output_folder):
+    os.mkdir(base_output_folder)
+  
+  invalid_filenames = []
+  for filename in filenames:
+    file_entry = rarc.get_file_entry(filename)
+    if file_entry is None:
+      print("Requested invalid file to extract: %s" % filename)
+      invalid_filenames.append(filename)
+  if invalid_filenames:
+    sys.exit(1)
   
   for file_entry in rarc.file_entries:
+    if filenames and file_entry.name not in filenames:
+      continue
     if file_entry.name.endswith(".bdl") or file_entry.name.endswith(".bmd"):
       extract_model_or_texture(file_entry, base_output_folder)
     if file_entry.name.endswith(".bti"):
@@ -31,8 +43,13 @@ def extract_model_or_texture(file_entry, base_output_folder):
   else:
     print("Extracting model %s" % file_entry.name)
   
-  output_folder = os.path.join(base_output_folder, file_basename)
-  os.mkdir(output_folder)
+  if file_ext == ".bti":
+    # Don't put textures in their own folder
+    output_folder = base_output_folder
+  else:
+    output_folder = os.path.join(base_output_folder, file_basename)
+    if not os.path.isdir(output_folder):
+      os.mkdir(output_folder)
   output_file_name = os.path.join(output_folder, file_entry.name)
   
   with open(output_file_name, "wb") as f:
@@ -57,9 +74,11 @@ def extract_model_or_texture(file_entry, base_output_folder):
       sys.exit(1)
 
 if __name__ == "__main__":
-  if len(sys.argv) != 2:
+  if len(sys.argv) < 2:
     print("Invalid arguments. Proper format:")
     print("  extract_models \"Path/To/Archive.arc\"")
+    print("  Or, to only extract specific files:")
+    print("  extract_models \"Path/To/Archive.arc\" [filename1] [filename2] [...]")
     sys.exit(1)
   
   rarc_path = sys.argv[1]
@@ -67,9 +86,11 @@ if __name__ == "__main__":
     print("Archive does not exist: %s" % rarc_path)
     sys.exit(1)
   
+  filenames = sys.argv[2:]
+  
   superbmd_path = os.path.join("SuperBMD", "SuperBMD.exe")
   if not os.path.isfile(superbmd_path):
     print("SuperBMD not found. SuperBMD.exe must be located in the SuperBMD folder.")
     sys.exit(1)
   
-  extract_all_models(rarc_path)
+  extract_all_models(rarc_path, filenames)
