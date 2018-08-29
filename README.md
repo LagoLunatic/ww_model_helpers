@@ -64,9 +64,9 @@ Then, it packs all of Link's models and textures into a new Link.arc, which is l
 
 Note: Currently pack_player does not support all of Link's models and textures. The only ones it supports at the moment are:
 * cl.bdl (Link's main model)
-* katsura.bdl (casual clothes hair)
+* katsura.bdl (casual clothes back hair model)
 * linktexbci4.bti (casual clothes texture)
-* pring.bdl (Power Braclets)
+* pring.bdl (Power Bracelets model)
 
 ### Step 6: Preview the changed model in J3D Model Viewer (optional).
 
