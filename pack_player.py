@@ -105,10 +105,10 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   
   
   # Main body
-  new_model_folder = os.path.join(custom_player_folder, "main")
+  new_model_folder = os.path.join(custom_player_folder, "cl")
   if os.path.isdir(new_model_folder):
     out_bmd, out_bdl = convert_to_bmd(new_model_folder, "cl")
-    orig_bdl = os.path.join(orig_link_folder, "main", "cl.bdl")
+    orig_bdl = os.path.join(orig_link_folder, "cl", "cl.bdl")
     link_arc_files["cl.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
       [
         "INF1",
@@ -117,7 +117,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
       ]
     )
   else:
-    raise Exception("No main model folder found")
+    raise Exception("No main model (cl) folder found")
     
   # Hands (texture only, model is not changed)
   new_hands_tex1 = os.path.join(custom_player_folder, "hands tex1.bin")
@@ -129,19 +129,19 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
     link_arc_files["hands.bdl"] = pack_sections(hands_sections)
   
   # Power Bracelets
-  new_model_folder = os.path.join(custom_player_folder, "power bracelets")
+  new_model_folder = os.path.join(custom_player_folder, "pring")
   if os.path.isdir(new_model_folder):
     out_bmd, out_bdl = convert_to_bmd(new_model_folder, "pring")
-    orig_bdl = os.path.join(orig_link_folder, "power bracelets", "pring.bdl")
+    orig_bdl = os.path.join(orig_link_folder, "pring", "pring.bdl")
     link_arc_files["pring.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
       ["INF1", "MDL3"]
     )
   
   # Casual hair
-  new_model_folder = os.path.join(custom_player_folder, "casual hair")
+  new_model_folder = os.path.join(custom_player_folder, "katsura")
   if os.path.isdir(new_model_folder):
     out_bmd, out_bdl = convert_to_bmd(new_model_folder, "katsura")
-    orig_bdl = os.path.join(orig_link_folder, "casual hair", "katsura.bdl")
+    orig_bdl = os.path.join(orig_link_folder, "katsura", "katsura.bdl")
     link_arc_files["katsura.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
       [
         "INF1",
@@ -150,10 +150,10 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
     )
     
   ## Hero's Charm
-  #new_model_folder = os.path.join(custom_player_folder, "hero's charm")
+  #new_model_folder = os.path.join(custom_player_folder, "yamu")
   #if os.path.isdir(new_model_folder):
   #  out_bmd, out_bdl = convert_to_bmd(new_model_folder, "yamu")
-  #  orig_bdl = os.path.join(orig_link_folder, "hero's charm", "yamu.bdl")
+  #  orig_bdl = os.path.join(orig_link_folder, "yamu", "yamu.bdl")
   #  link_arc_files["yamu.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
   #    [
   #      "INF1",
@@ -162,10 +162,10 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   #  )
   #
   ## Mirror Shield light ray
-  #new_model_folder = os.path.join(custom_player_folder, "mirror shield light ray")
+  #new_model_folder = os.path.join(custom_player_folder, "ymsls00")
   #if os.path.isdir(new_model_folder):
   #  out_bmd, out_bdl = convert_to_bmd(new_model_folder, "ymsls00")
-  #  orig_bdl = os.path.join(orig_link_folder, "mirror shield light ray", "ymsls00.bdl")
+  #  orig_bdl = os.path.join(orig_link_folder, "ymsls00", "ymsls00.bdl")
   #  link_arc_files["ymsls00.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
   #    [
   #      #"INF1",
@@ -173,8 +173,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   #    ],
   #  )
   
-  # Create casual_clothes_texture.bti
-  casual_tex_png = os.path.join(custom_player_folder, "casual_clothes_texture.png")
+  # Create casual clothes texture BTI
+  casual_tex_png = os.path.join(custom_player_folder, "linktexbci4.png")
   if os.path.isfile(casual_tex_png):
     from PIL import Image
     image = Image.open(casual_tex_png)
@@ -183,13 +183,13 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
     texture.palette_format = 0
     texture.replace_image(image)
     texture.save_changes()
-    casual_tex_bti = os.path.join(custom_player_folder, "casual_clothes_texture.bti")
+    casual_tex_bti = os.path.join(custom_player_folder, "linktexbci4.bti")
     with open(casual_tex_bti, "wb") as f:
       texture.file_entry.data.seek(0)
       f.write(texture.file_entry.data.read())
   
-  # Import casual_clothes_texture.bti
-  casual_tex_bti = os.path.join(custom_player_folder, "casual_clothes_texture.bti")
+  # Import casual clothes texture BTI
+  casual_tex_bti = os.path.join(custom_player_folder, "linktexbci4.bti")
   if os.path.isfile(casual_tex_bti):
     with open(casual_tex_bti, "rb") as f:
       data = BytesIO(f.read())
