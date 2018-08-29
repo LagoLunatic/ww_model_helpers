@@ -96,6 +96,11 @@ def convert_bmd_to_bdl(out_bmd_path, out_bdl_path, orig_bdl_path, sections_to_co
 
 
 def convert_all_player_models(orig_link_folder, custom_player_folder):
+  orig_link_arc_path = os.path.join(orig_link_folder, "Link.arc")
+  with open(orig_link_arc_path, "rb") as f:
+    rarc_data = BytesIO(f.read())
+  link_arc = RARC(rarc_data)
+  
   link_arc_files = OrderedDict()
   
   
@@ -190,11 +195,6 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
       data = BytesIO(f.read())
       link_arc_files["linktexbci4.bti"] = data
   
-  
-  orig_link_arc_path = os.path.join(orig_link_folder, "Link.arc")
-  with open(orig_link_arc_path, "rb") as f:
-    rarc_data = BytesIO(f.read())
-  link_arc = RARC(rarc_data)
   
   for file_name, data in link_arc_files.items():
     file_entry = link_arc.get_file_entry(file_name)
