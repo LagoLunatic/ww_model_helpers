@@ -61,7 +61,15 @@ if __name__ == "__main__":
     print("Invalid arguments. Proper format:")
     print("  extract_models \"Path/To/Archive.arc\"")
     sys.exit(1)
+  
   rarc_path = sys.argv[1]
   if not os.path.isfile(rarc_path):
     print("Archive does not exist: %s" % rarc_path)
+    sys.exit(1)
+  
+  superbmd_path = os.path.join("SuperBMD", "SuperBMD.exe")
+  if not os.path.isfile(superbmd_path):
+    print("SuperBMD not found. SuperBMD.exe must be located in the SuperBMD folder.")
+    sys.exit(1)
+  
   extract_all_models(rarc_path)

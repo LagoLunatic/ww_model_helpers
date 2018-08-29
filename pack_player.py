@@ -219,10 +219,20 @@ if __name__ == "__main__":
     print("Invalid arguments. Proper format:")
     print("  pack_player -link \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
     sys.exit(1)
+  
   orig_link_folder = sys.argv[2]
-  custom_player_folder = sys.argv[4]
   if not os.path.isdir(orig_link_folder):
     print("Clean link folder does not exist: %s" % orig_link_folder)
+    sys.exit(1)
+  
+  custom_player_folder = sys.argv[4]
   if not os.path.isdir(custom_player_folder):
     print("Custom player folder does not exist: %s" % custom_player_folder)
+    sys.exit(1)
+  
+  superbmd_path = os.path.join("SuperBMD", "SuperBMD.exe")
+  if not os.path.isfile(superbmd_path):
+    print("SuperBMD not found. SuperBMD.exe must be located in the SuperBMD folder.")
+    sys.exit(1)
+  
   convert_all_player_models(orig_link_folder, custom_player_folder)
