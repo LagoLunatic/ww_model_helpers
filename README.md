@@ -62,6 +62,12 @@ What pack_player does is automate converting the .dae models in all the folders 
 It also converts any .png images back to .bti images that the game can use.  
 Then, it packs all of Link's models and textures into a new Link.arc, which is located in your `Custom Model` folder.
 
+Note: Currently pack_player does not support all of Link's models and textures. The only ones it supports at the moment are:
+* cl.bdl (Link's main model)
+* katsura.bdl (casual clothes hair)
+* linktexbci4.bti (casual clothes texture)
+* pring.bdl (Power Braclets)
+
 ### Step 6: Preview the changed model in J3D Model Viewer (optional).
 
 Before putting your new model in game, it's a good idea to load it up in J3D Model Viewer and make sure it looks right there. If it doesn't, you don't need to waste your time replacing the game's model and booting the game up.
