@@ -33,6 +33,8 @@ def extract_all_models(rarc_path, filenames):
       extract_model_or_texture(file_entry, base_output_folder)
     if file_entry.name.endswith(".bti"):
       extract_model_or_texture(file_entry, base_output_folder)
+    if file_entry.name.endswith(".bck") or file_entry.name.endswith(".brk") or file_entry.name.endswith(".btk"):
+      extract_animation(file_entry, base_output_folder)
 
 def extract_model_or_texture(file_entry, base_output_folder):
   file_basename, file_ext = os.path.splitext(file_entry.name)
@@ -70,6 +72,26 @@ def extract_model_or_texture(file_entry, base_output_folder):
     if result != 0:
       input()
       sys.exit(1)
+
+def extract_animation(file_entry, base_output_folder):
+  print("Extracting animation %s" % file_entry.name)
+  
+  file_basename, file_ext = os.path.splitext(file_entry.name)
+  if file_ext == ".bck":
+    animation_type_folder_name = "#Bone animations"
+  elif file_ext == ".brk":
+    animation_type_folder_name = "#TEV register animations"
+  elif file_ext == ".btk":
+    animation_type_folder_name = "#Texture animations"
+  
+  output_folder = os.path.join(base_output_folder, animation_type_folder_name)
+  if not os.path.isdir(output_folder):
+    os.mkdir(output_folder)
+  output_file_name = os.path.join(output_folder, file_entry.name)
+  
+  with open(output_file_name, "wb") as f:
+    file_entry.data.seek(0)
+    f.write(file_entry.data.read())
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
