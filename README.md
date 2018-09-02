@@ -44,12 +44,12 @@ You could modify it now if you want, but for the sake of this tutorial just leav
 Note that the process of importing and exporting .dae files is lossy, so if you do it too many times the model will get completely screwed up. Therefore, you should only import each model's .dae one time, and then save it as a .blend (or whatever the equivalent is if you're not using Blender).  
 So after importing `cl.dae`, you should go to Save As and save `cl.blend` right next to `cl.dae`. From now on you can open and resave `cl.blend` as many times as you want and the model will never get messed up.
 
-You might notice that Blender is displaying the model without any textures. If you want to see textures, first change Blender's view mode to Material. Then go through all of Link's materials one by one and check the Shadeless checkbox. But that gets pretty tedious, so you can automate checking Shadeless for all materials by running this simple Python script within Blender's text editor:  
-```
-import bpy
-for item in bpy.data.materials:
-  item.use_shadeless = True
-```
+### Step 4.5: Fix the imported model in Blender.
+
+Now that you have the model in Blender, you might notice that the shading on parts of the model looks wrong. For example, around Link's mouth. This is because Blender's .dae importer currently does not import custom normals from the .dae file.  
+In order to fix the normals, use Blender's text editor to open the script named `fix_normals.py` that comes with the WW Model Helpers download. Click "Run Script", and it should automatically fix the shading on Link's mouth and such.
+
+Another issue is that Blender is displaying the model without any textures. It's not strictly necessary, but if you want to see textures, first change Blender's view mode to Material. Then open the script named `make_materials_shadeless.py` that comes with the WW Model Helpers download, and click "Run Script".
 If the model displays as completely white after doing this, your model might not have any textures imported with it. This can be caused by you moving the texture .png files after extracting them from the model but before importing the model into Blender - the .dae file stores the paths to the textures as absolute paths on your hard drive, so moving them will cause Blender to not be able to find them.
 
 ### Step 5: Convert the model back to Wind Waker's format.  
