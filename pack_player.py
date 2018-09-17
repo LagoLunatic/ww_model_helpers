@@ -4,6 +4,7 @@ import os
 from io import BytesIO
 from subprocess import call
 from collections import OrderedDict
+from PIL import Image
 
 sys.path.insert(0, "./wwrando")
 from fs_helpers import *
@@ -101,15 +102,13 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
     rarc_data = BytesIO(f.read())
   link_arc = RARC(rarc_data)
   
-  link_arc_files = OrderedDict()
-  
   
   # Main body
   new_model_folder = os.path.join(custom_player_folder, "cl")
   if os.path.isdir(new_model_folder):
     out_bmd, out_bdl = convert_to_bmd(new_model_folder, "cl")
     orig_bdl = os.path.join(orig_link_folder, "cl", "cl.bdl")
-    link_arc_files["cl.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
+    link_arc.get_file_entry("cl.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
       [
         "INF1",
         "MDL3",
@@ -118,22 +117,13 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
     )
   else:
     raise Exception("No main model (cl) folder found")
-    
-  # Hands (texture only, model is not changed)
-  new_hands_tex1 = os.path.join(custom_player_folder, "hands tex1.bin")
-  if os.path.isfile(new_hands_tex1):
-    orig_bdl = os.path.join(orig_link_folder, "hands", "hands.bdl")
-    hands_sections = unpack_sections(orig_bdl)
-    with open(new_hands_tex1, "rb") as f:
-      hands_sections["TEX1"] = BytesIO(f.read())
-    link_arc_files["hands.bdl"] = pack_sections(hands_sections)
   
   # Power Bracelets
   new_model_folder = os.path.join(custom_player_folder, "pring")
   if os.path.isdir(new_model_folder):
     out_bmd, out_bdl = convert_to_bmd(new_model_folder, "pring")
     orig_bdl = os.path.join(orig_link_folder, "pring", "pring.bdl")
-    link_arc_files["pring.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
+    link_arc.get_file_entry("pring.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
       ["INF1", "MDL3"]
     )
   
@@ -142,7 +132,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   if os.path.isdir(new_model_folder):
     out_bmd, out_bdl = convert_to_bmd(new_model_folder, "katsura")
     orig_bdl = os.path.join(orig_link_folder, "katsura", "katsura.bdl")
-    link_arc_files["katsura.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
+    link_arc.get_file_entry("katsura.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
       [
         "INF1",
         "MDL3"
@@ -154,7 +144,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   #if os.path.isdir(new_model_folder):
   #  out_bmd, out_bdl = convert_to_bmd(new_model_folder, "yamu")
   #  orig_bdl = os.path.join(orig_link_folder, "yamu", "yamu.bdl")
-  #  link_arc_files["yamu.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
+  #  link_arc.get_file_entry("yamu.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
   #    [
   #      "INF1",
   #      "MDL3"
@@ -166,17 +156,27 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   #if os.path.isdir(new_model_folder):
   #  out_bmd, out_bdl = convert_to_bmd(new_model_folder, "ymsls00")
   #  orig_bdl = os.path.join(orig_link_folder, "ymsls00", "ymsls00.bdl")
-  #  link_arc_files["ymsls00.bdl"] = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
+  #  link_arc.get_file_entry("ymsls00.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
   #    [
   #      #"INF1",
   #      "MDL3"
   #    ],
   #  )
   
+  # Import hands texture
+  hands_tex_png = os.path.join(custom_player_folder, "hands", "handsS3TC.png")
+  if os.path.isfile(hands_tex_png):
+    image = Image.open(hands_tex_png)
+    hands_model = link_arc.get_file("hands.bdl")
+    textures = hands_model.tex1.textures_by_name["handsS3TC"]
+    for texture in textures:
+      texture.replace_image(image)
+    hands_model.save_changes()
+    link_arc.get_file_entry("hands.bdl").data = hands_model.file_entry.data
+  
   # Create casual clothes texture BTI
   casual_tex_png = os.path.join(custom_player_folder, "linktexbci4.png")
   if os.path.isfile(casual_tex_png):
-    from PIL import Image
     image = Image.open(casual_tex_png)
     texture = link_arc.get_file("linktexbci4.bti")
     texture.image_format = 4
@@ -193,20 +193,19 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   if os.path.isfile(casual_tex_bti):
     with open(casual_tex_bti, "rb") as f:
       data = BytesIO(f.read())
-      link_arc_files["linktexbci4.bti"] = data
+      link_arc.get_file_entry("linktexbci4.bti").data = data
   
-  
-  for file_name, data in link_arc_files.items():
-    file_entry = link_arc.get_file_entry(file_name)
-    
-    if file_name.endswith(".bdl"):
-      print("File %s, orig size %X, new size %X" % (file_name, data_len(file_entry.data), data_len(data)))
-      orig_sections = unpack_sections_by_data(file_entry.data)
-      new_sections = unpack_sections_by_data(data)
-      for section_magic, section_data in orig_sections.items():
-        print("  %s, orig size %X, new size %X" % (section_magic, data_len(section_data), data_len(new_sections[section_magic])))
-    
-    file_entry.data = data
+  # Print out changed file sizes
+  with open(orig_link_arc_path, "rb") as f:
+    rarc_data = BytesIO(f.read())
+  orig_link_arc = RARC(rarc_data)
+  for file_entry in link_arc.file_entries:
+    orig_file_entry = orig_link_arc.get_file_entry(file_entry.name)
+    if file_entry.is_dir:
+      continue
+    if data_len(orig_file_entry.data) == data_len(file_entry.data):
+      continue
+    print("File %s, orig size %X, new size %X" % (file_entry.name, data_len(orig_file_entry.data), data_len(file_entry.data)))
   
   link_arc.save_changes()
   link_arc_out_path = os.path.join(custom_player_folder, "Link.arc")
