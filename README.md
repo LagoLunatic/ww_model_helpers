@@ -34,7 +34,7 @@ If everything worked correctly, your `Link Original` folder should now have 57 s
 
 ### Step 3: Copy the files you want to edit.  
 The `Link Original` folder needs to have the original models in it, so before modifying anything let's make a copy of them in the `Custom Model` folder.  
-For the sake of this tutorial we'll copy the `cl` folder (containing Link's main model), the `katsura` folder (containing the model for the back of Link's hair when he's in his casual clothes), and `linktexbci4.png` (Link's texture for when he's in his casual clothes). But if you want to modify other files, you would copy those as well (e.g. copy the `pring` folder if you want to modify the Power Bracelets). The only thing you absolutely have to copy is `cl`.
+For the sake of this tutorial we'll copy the `cl` folder (containing Link's main model), the `hands` folder (containing the model for Link's various hand poses), the `katsura` folder (containing the model for the back of Link's hair when he's in his casual clothes), and `linktexbci4.png` (Link's texture for when he's in his casual clothes). But if you want to modify other files, you would copy those as well (e.g. copy the `pring` folder if you want to modify the Power Bracelets). The only thing you absolutely have to copy is `cl`.
 
 ### Step 4: Open the model.  
 Now you can open Link's model in a 3D modeling program. This tutorial will assume you use Blender, but other modeling programs probably work too.  
@@ -63,10 +63,15 @@ It also converts any .png images back to .bti images that the game can use.
 Then, it packs all of Link's models and textures into a new Link.arc, which is located in your `Custom Model` folder.
 
 Note: Currently pack_player does not support all of Link's models and textures. The only ones it supports at the moment are:
-* cl.bdl (Link's main model)
-* katsura.bdl (casual clothes back hair model)
-* linktexbci4.bti (casual clothes texture)
-* pring.bdl (Power Bracelets model)
+* Link's main model (`cl` folder)
+* Hands texture (`hands/handsS3TC.png` file)
+* Casual clothes back hair model (`katsura` folder)
+* Casual clothes texture (`linktexbci4.png` file)
+* Hero's Charm model (`yamu` folder)
+* Power bracelets model (`pring` folder)
+* Hyoi Pear model (`hyoinomi` folder)
+* Hero's Sword blade model (`swa` folder)
+* Hero's Sword hilt model (`swgripa` folder)
 
 ### Step 6: Preview the changed model in J3D Model Viewer (optional).
 
