@@ -118,50 +118,42 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   else:
     raise Exception("No main model (cl) folder found")
   
-  # Power Bracelets
-  new_model_folder = os.path.join(custom_player_folder, "pring")
-  if os.path.isdir(new_model_folder):
-    out_bmd, out_bdl = convert_to_bmd(new_model_folder, "pring")
-    orig_bdl = os.path.join(orig_link_folder, "pring", "pring.bdl")
-    link_arc.get_file_entry("pring.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
-      ["INF1", "MDL3"]
-    )
-  
-  # Casual hair
-  new_model_folder = os.path.join(custom_player_folder, "katsura")
-  if os.path.isdir(new_model_folder):
-    out_bmd, out_bdl = convert_to_bmd(new_model_folder, "katsura")
-    orig_bdl = os.path.join(orig_link_folder, "katsura", "katsura.bdl")
-    link_arc.get_file_entry("katsura.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
-      [
-        "INF1",
-        "MDL3"
-      ],
-    )
+  accessory_model_names = [
+    "pring",    # Power Bracelets
+    "yamu",     # Hero's Charm
+    "hyoinomi", # Hyoi Pear
+    "katsura",  # Casual hair
+    "swa",      # Hero's Sword blade
+    "swgripa",  # Hero's Sword hilt
     
-  ## Hero's Charm
-  #new_model_folder = os.path.join(custom_player_folder, "yamu")
-  #if os.path.isdir(new_model_folder):
-  #  out_bmd, out_bdl = convert_to_bmd(new_model_folder, "yamu")
-  #  orig_bdl = os.path.join(orig_link_folder, "yamu", "yamu.bdl")
-  #  link_arc.get_file_entry("yamu.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
-  #    [
-  #      "INF1",
-  #      "MDL3"
-  #    ],
-  #  )
-  #
-  ## Mirror Shield light ray
-  #new_model_folder = os.path.join(custom_player_folder, "ymsls00")
-  #if os.path.isdir(new_model_folder):
-  #  out_bmd, out_bdl = convert_to_bmd(new_model_folder, "ymsls00")
-  #  orig_bdl = os.path.join(orig_link_folder, "ymsls00", "ymsls00.bdl")
-  #  link_arc.get_file_entry("ymsls00.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
-  #    [
-  #      #"INF1",
-  #      "MDL3"
-  #    ],
-  #  )
+    # TODO:
+    #"swms",     # Master Sword blade
+    #"swgripms", # Master Sword hilt
+    #"sha",      # Hero's Shield
+    #"shms",     # Mirror Shield
+    #"ymsls00",  # Mirror Shield light ray
+  ]
+  for model_basename in accessory_model_names:
+    new_model_folder = os.path.join(custom_player_folder, model_basename)
+    if os.path.isdir(new_model_folder):
+      out_bmd, out_bdl = convert_to_bmd(new_model_folder, model_basename)
+      if model_basename == "sha":
+        orig_bdl = os.path.join(orig_link_folder, "shms", "shms" + ".bdl")
+      else:
+        orig_bdl = os.path.join(orig_link_folder, model_basename, model_basename + ".bdl")
+      link_arc.get_file_entry(model_basename + ".bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
+        [
+          "INF1",
+          #"JNT1",
+          #"SHP1",
+          #"VTX1",
+          #"EVP1",
+          #"DRW1",
+          #"MAT3",
+          #"TEX1",
+          "MDL3",
+        ]
+      )
   
   # Import hands texture
   hands_tex_png = os.path.join(custom_player_folder, "hands", "handsS3TC.png")
