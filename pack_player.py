@@ -5,10 +5,14 @@ from io import BytesIO
 from subprocess import call
 from collections import OrderedDict
 from PIL import Image
+import re
 
 sys.path.insert(0, "./wwrando")
 from fs_helpers import *
 from wwlib.rarc import RARC
+
+class ModelConversionError(Exception):
+  pass
 
 def convert_to_bmd(base_folder, file_base_name, superbmd_folder="SuperBMD"):
   in_dae_path      = os.path.join(base_folder, file_base_name + ".dae")
@@ -16,6 +20,19 @@ def convert_to_bmd(base_folder, file_base_name, superbmd_folder="SuperBMD"):
   out_bmd_path     = os.path.join(base_folder, file_base_name + ".bmd")
   tex_headers_path = os.path.join(base_folder, "tex_headers.json")
   materials_path   = os.path.join(base_folder, "materials.json")
+  
+  # Check through the .dae file to see if there are any instances of <v/>, which would cause the "Invalid contents in element "n"" error when SuperBMD tries to read the file.
+  with open(in_dae_path) as f:
+    dae_contents = f.read()
+  matches = re.findall(
+    r"<input semantic=\"WEIGHT\" source=\"#skeleton_root_([^\"]+?)-skin-weights\" offset=\"\d+\"/>\s*" + \
+    r"<vcount>[^<]+</vcount>\s*" + \
+    "<v/>",
+    dae_contents,
+    re.MULTILINE
+  )
+  if matches:
+    raise ModelConversionError("Error: All of the vertices in the following meshes are unweighted: " + (", ".join(matches)))
   
   print("Converting %s to BMD" % in_dae_path)
   
@@ -226,4 +243,8 @@ if __name__ == "__main__":
     print("SuperBMD not found. SuperBMD.exe must be located in the SuperBMD folder.")
     sys.exit(1)
   
-  convert_all_player_models(orig_link_folder, custom_player_folder)
+  try:
+    convert_all_player_models(orig_link_folder, custom_player_folder)
+  except ModelConversionError as e:
+    print(e)
+    sys.exit(1)
