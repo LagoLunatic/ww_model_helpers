@@ -222,6 +222,23 @@ for prefix in ["hero", "casual"]:
     bpy.data.images["linktexS3TC.png_mask"].filepath = os.path.join(color_masks_dir, "%s_%s.png" % (prefix, curr_color_name))
     scene.render.filepath = os.path.join(preview_dir, "preview_%s_%s.png" % (prefix, curr_color_name))
     bpy.ops.render.render(write_still=True)
+    
+    # Now make sure the mask is binary by converting unwanted colors to pure red (e.g. pink colors where the eyes meet the skin).
+    # Must save render to disk then reload as a new image to access the pixels of the render.
+    render_image = bpy.data.images.load(scene.render.filepath)
+    print(len(render_image.pixels), list(render_image.size))
+    pixels = render_image.pixels[:]
+    new_pixels = []
+    for i in range(len(render_image.pixels)//4):
+      r, g, b, a = pixels[i*4:i*4+4]
+      if a == 0.0:
+        new_pixels += [r, g, b, a]
+      elif r == 1.0 and g == 1.0 and b == 1.0:
+        new_pixels += [1.0, 1.0, 1.0, a]
+      else:
+        new_pixels += [1.0, 0.0, 0.0, a]
+    render_image.pixels[:] = new_pixels
+    render_image.save_render(scene.render.filepath)
 
 
 
