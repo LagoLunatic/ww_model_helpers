@@ -82,6 +82,11 @@ bones["cl_katsura"].rotation_euler.rotate_axis("X", math.radians(90.0))
 bones["cl_katsura"].rotation_euler.rotate_axis("Y", math.radians(90.0))
 bpy.ops.object.mode_set(mode="OBJECT")
 
+orig_tex_names_for_objs = {}
+for obj in scene.objects:
+  if obj.data.__class__ == bpy.types.Mesh:
+    orig_tex_names_for_objs[obj] = obj.data.materials[0].texture_slots[0].texture.image.name
+
 def update_objects_hidden_in_render(prefix):
   for obj in scene.objects:
     if obj.data.__class__ == bpy.types.Mesh:
@@ -91,10 +96,10 @@ def update_objects_hidden_in_render(prefix):
       elif obj.data.materials[0].name == belt_buckle_material_name:
         # Hide the belt buckle mesh in casual clothes.
         obj.hide_render = (prefix == "casual")
-      elif obj.data.materials[0].texture_slots[0].texture.image.name == "katsuraS3TC.png":
+      elif orig_tex_names_for_objs[obj] == "katsuraS3TC.png":
         # Hide the casual hair mesh in hero clothes.
         obj.hide_render = (prefix == "hero")
-      elif obj.data.materials[0].texture_slots[0].texture.image.name == "podAS3TC.png":
+      elif orig_tex_names_for_objs[obj] == "podAS3TC.png":
         # Hide the sword sheath mesh.
         obj.hide_render = True
       elif obj.data.materials[0].name in ["m2eyeLdamA", "m3eyeLdamB", "m5eyeRdamA", "m6eyeRdamB"]:
@@ -108,11 +113,6 @@ def update_objects_hidden_in_render(prefix):
         obj.hide_render = False
 
 update_objects_hidden_in_render("hero")
-
-orig_tex_names_for_objs = {}
-for obj in scene.objects:
-  if obj.data.__class__ == bpy.types.Mesh:
-    orig_tex_names_for_objs[obj] = obj.data.materials[0].texture_slots[0].texture.image.name
 
 scene.render.resolution_x = 900
 scene.render.resolution_y = 1300
