@@ -54,12 +54,22 @@ bpy.ops.object.mode_set(mode="POSE")
 bones = skeleton_root.pose.bones
 for bone in bones:
   bone.rotation_mode = "XYZ"
-bones["Lshoulder_jnt"].rotation_euler.rotate_axis("Z", math.radians(-10.0))
-bones["LarmA_jnt"].rotation_euler.rotate_axis("Z", math.radians(-75.0))
-bones["Rshoulder_jnt"].rotation_euler.rotate_axis("Z", math.radians(-10.0))
-bones["RarmA_jnt"].rotation_euler.rotate_axis("Z", math.radians(-75.0))
-bones["hatA_jnt"].rotation_euler.rotate_axis("Z", math.radians(-50.0))
-bones["hatB_jnt"].rotation_euler.rotate_axis("Z", math.radians(-50.0))
+bones["Lshoulder_jnt"].rotation_euler = (0.000000, -0.000000, -0.437075)
+bones["LarmA_jnt"].rotation_euler = (0.061420, 0.112105, -0.818639)
+bones["LarmB_jnt"].rotation_euler = (-0.161012, -0.485416, -0.033357)
+bones["Rshoulder_jnt"].rotation_euler = (0.000000, 0.000000, -0.394006)
+bones["RarmA_jnt"].rotation_euler = (-0.086200, -0.138778, -0.856716)
+bones["RarmB_jnt"].rotation_euler = (0.180819, 0.423769, -0.086300)
+bones["cl_podA"].rotation_euler = (0.000000, -0.000000, -0.577303)
+bones["hatA_jnt"].rotation_euler = (0.000000, 0.000000, -1.159582)
+bones["hatB_jnt"].rotation_euler = (0.000000, 0.000000, -0.138675)
+bones["hatC_jnt"].rotation_euler = (0.000000, 0.000000, -0.315255)
+bones["Lclotch_jnt"].rotation_euler = (-0.102936, 0.003428, -0.106704)
+bones["LlegB_jnt"].rotation_euler = (-0.005748, -0.037766, 0.302607)
+bones["Lfoot_jnt"].rotation_euler = (-0.096673, 0.326072, 0.146885)
+bones["Rclotch_jnt"].rotation_euler = (0.091450, -0.012720, -0.202730)
+bones["RlegB_jnt"].rotation_euler = (0.017057, 0.070484, 0.474697)
+bones["Rfoot_jnt"].rotation_euler = (0.089334, -0.484198, 0.215261)
 
 # Pose the casual hair so it's not down by the player's feet.
 casual_hair_skeleton_root = scene.objects["skeleton_root.001"]
