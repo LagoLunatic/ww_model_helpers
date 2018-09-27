@@ -117,8 +117,9 @@ def update_objects_hidden_in_render(prefix):
 
 update_objects_hidden_in_render("hero")
 
-scene.render.resolution_x = 900
-scene.render.resolution_y = 1300
+scene.render.resolution_x = 225
+scene.render.resolution_y = 350
+scene.render.resolution_percentage = 100
 
 # Make the background transparent (for the masks).
 scene.render.layers["RenderLayer"].use_sky = False
@@ -128,7 +129,7 @@ scene.render.use_antialiasing = False
 
 # Add camera.
 bpy.ops.object.camera_add(
-  location=(90, -120, 90),
+  location=(105, -140, 100),
   rotation=(math.radians(80), math.radians(0), math.radians(36.5)),
 )
 # Alternate camera to give a view of the back:
