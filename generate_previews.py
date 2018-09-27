@@ -6,6 +6,8 @@ from mathutils import Euler
 import glob
 import json
 import struct
+import tempfile
+import shutil
 
 context = bpy.context
 scene = context.scene
@@ -27,6 +29,7 @@ if not os.path.isfile(bdl_file_path):
 tex_headers_path = os.path.join(blend_file_directory, "tex_headers.json")
 if not os.path.isfile(tex_headers_path):
   raise Exception("tex_headers.json was not found.")
+temp_dir = tempfile.mkdtemp()
 
 # Need to detect if this model is based on Link, or based on Tetra/Medli, since detecting which mesh is the hat/belt buckle is different for Tetra and Medli compared to Link.
 with open(bdl_file_path, "rb") as f:
@@ -173,9 +176,16 @@ for texture in bpy.data.textures:
   texture.filter_size = 0.1
 
 # Make a copy of all images so we can change those into the masks.
-for image in bpy.data.images:
-  mask_image = bpy.data.images.load(image.filepath)
+orig_images = list(bpy.data.images)
+for image in orig_images:
+  if len(image.pixels) == 0:
+    continue
+  
+  temp_img_path = os.path.join(temp_dir, image.name)
+  image.save_render(filepath=temp_img_path)
+  mask_image = bpy.data.images.load(temp_img_path)
   mask_image.name = image.name + "_mask"
+  
   for tex in bpy.data.textures:
     if isinstance(tex, bpy.types.ImageTexture):
       if tex.image == image:
@@ -349,3 +359,6 @@ bpy.data.images["linktexS3TC.png"].filepath = casual_clothes_tex_path
 update_objects_hidden_in_render("casual")
 scene.render.filepath = os.path.join(preview_dir, "preview_casual.png")
 bpy.ops.render.render(write_still=True)
+
+# Delete temp dir.
+shutil.rmtree(temp_dir)
