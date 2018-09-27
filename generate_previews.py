@@ -192,8 +192,8 @@ for prefix in ["hero", "casual"]:
     curr_color_name = file_basename[len(prefix + "_"):]
     
     if curr_color_name == "Skin":
-      textures_to_mask = ["mouthS3TC.1.png", "eyeh.1.png", "mayuh.1.png"]
-      textures_to_not_mask = ["katsuraS3TC.png"]
+      textures_to_mask = ["mouthS3TC.1.png"]
+      textures_to_not_mask = ["katsuraS3TC.png", "eyeh.1.png", "mayuh.1.png"]
     elif curr_color_name == "Hair":
       textures_to_mask = ["katsuraS3TC.png"]
       textures_to_not_mask = ["mouthS3TC.1.png", "eyeh.1.png", "mayuh.1.png"]
