@@ -95,25 +95,25 @@ def update_objects_hidden_in_render(prefix):
     if obj.data.__class__ == bpy.types.Mesh:
       if obj.data.materials[0].name == hat_material_name:
         # Hide the hat mesh in casual clothes.
-        obj.hide_render = (prefix == "casual")
+        obj.hide_render = obj.hide = (prefix == "casual")
       elif obj.data.materials[0].name == belt_buckle_material_name:
         # Hide the belt buckle mesh in casual clothes.
-        obj.hide_render = (prefix == "casual")
+        obj.hide_render = obj.hide = (prefix == "casual")
       elif orig_tex_names_for_objs[obj] == "katsuraS3TC.png":
         # Hide the casual hair mesh in hero clothes.
-        obj.hide_render = (prefix == "hero")
+        obj.hide_render = obj.hide = (prefix == "hero")
       elif orig_tex_names_for_objs[obj] == "podAS3TC.png":
         # Hide the sword sheath mesh.
-        obj.hide_render = True
+        obj.hide_render = obj.hide = True
       elif obj.data.materials[0].name in ["m2eyeLdamA", "m3eyeLdamB", "m5eyeRdamA", "m6eyeRdamB"]:
         # Hide the duplicate eye meshes.
-        obj.hide_render = True
+        obj.hide_render = obj.hide = True
       elif obj.data.materials[0].name in ["m9mayuLdamA", "m10mayuLdamB", "m12mayuRdamA", "m13mayuRdamB"]:
         # Hide the duplicate eyebrow meshes.
-        obj.hide_render = True
+        obj.hide_render = obj.hide = True
       else:
         # Show every other mesh.
-        obj.hide_render = False
+        obj.hide_render = obj.hide = False
 
 update_objects_hidden_in_render("hero")
 
