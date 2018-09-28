@@ -289,14 +289,20 @@ scene.cycles.film_transparent = True
 scene.cycles.filter_width = 0.01 # Effectively disables antialiasing where meshes meet
 
 # Add lighting.
-bpy.ops.object.lamp_add(
-  type="SUN",
-  location=(17, -82, 100),
-  rotation=(math.radians(75), math.radians(15), math.radians(0)),
-)
-lamp1 = context.object
-lamp1.data.shadow_soft_size = 0.04
-lamp1.data.use_specular = False
+for lamp_i in range(2):
+  bpy.ops.object.lamp_add(
+    type="SUN",
+    location=(17, -82, 100),
+    rotation=(math.radians(75), math.radians(15), math.radians(0)),
+  )
+  lamp = context.object
+  lamp.data.shadow_soft_size = 0.04
+  lamp.data.use_specular = False
+  
+  # We make a second lamp and put it on the second layer so the eyes have lighting there.
+  lamp.layers = [layer_i == lamp_i for layer_i in range(len(lamp.layers))]
+  if lamp_i == 1:
+    lamp.hide = True # Hide the second lamp from the viewport.
 
 # Create the pupil image.
 bpy.data.images.load(os.path.join(blend_file_directory, "hitomi.png"))
@@ -405,6 +411,7 @@ for obj in scene.objects:
 main_layer = scene.render.layers["RenderLayer"]
 main_layer.layers = [i == 0 for i in range(len(main_layer.layers))]
 main_layer.layers_exclude = [i == 1 for i in range(len(main_layer.layers))] # Stop the eyes from casting shadows on the body
+eyes_and_eyebrows_layer.layers_exclude = [i == 0 for i in range(len(main_layer.layers))] # Also stop the body from casting shadows on the hair
 scene.layers = [True for i in range(len(scene.layers))]
 
 scene.use_nodes = True
