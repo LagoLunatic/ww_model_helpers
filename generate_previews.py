@@ -267,6 +267,7 @@ scene.render.engine = "CYCLES"
 world.light_settings.use_ambient_occlusion = True
 world.light_settings.ao_factor = 0.3
 scene.cycles.film_transparent = True
+scene.cycles.filter_width = 0.01 # Effectively disables antialiasing where meshes meet
 
 # Add lighting.
 bpy.ops.object.lamp_add(
