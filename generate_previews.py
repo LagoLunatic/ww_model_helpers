@@ -251,11 +251,11 @@ for prefix in ["hero", "casual"]:
     for i in range(len(render_image.pixels)//4):
       r, g, b, a = pixels[i*4:i*4+4]
       if a == 0.0:
-        new_pixels += [r, g, b, a]
+        new_pixels += [r, g, b, 0.0]
       elif r == 1.0 and g == 1.0 and b == 1.0:
-        new_pixels += [1.0, 1.0, 1.0, a]
+        new_pixels += [1.0, 1.0, 1.0, 1.0]
       else:
-        new_pixels += [1.0, 0.0, 0.0, a]
+        new_pixels += [1.0, 0.0, 0.0, 1.0]
     render_image.pixels[:] = new_pixels
     render_image.save_render(scene.render.filepath)
 
