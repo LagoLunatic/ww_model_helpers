@@ -387,6 +387,7 @@ for obj in scene.objects:
       obj.layers = [i == 1 for i in range(len(obj.layers))]
 main_layer = scene.render.layers["RenderLayer"]
 main_layer.layers = [i == 0 for i in range(len(main_layer.layers))]
+main_layer.layers_exclude = [i == 1 for i in range(len(main_layer.layers))] # Stop the eyes from casting shadows on the body
 scene.layers = [True for i in range(len(scene.layers))]
 
 scene.use_nodes = True
