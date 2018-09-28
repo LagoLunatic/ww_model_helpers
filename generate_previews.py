@@ -120,8 +120,11 @@ def update_objects_hidden_in_render(prefix):
 
 update_objects_hidden_in_render("hero")
 
-scene.render.resolution_x = 225
-scene.render.resolution_y = 350
+# Set the render resolution.
+# The randomizer will display it at 225x350 to the user.
+# But we render it at twice that size so the randomizer can work with the non-antialiased render, and then scale it down to get antialiasing.
+scene.render.resolution_x = 225*2
+scene.render.resolution_y = 350*2
 scene.render.resolution_percentage = 100
 
 # Make the background transparent (for the masks).
