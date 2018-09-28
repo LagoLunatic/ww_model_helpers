@@ -265,14 +265,13 @@ for prefix in ["hero", "casual"]:
     # Now make sure the mask is binary by converting unwanted colors to pure red (e.g. pink colors where the eyes meet the skin).
     # Must save render to disk then reload as a new image to access the pixels of the render.
     render_image = bpy.data.images.load(scene.render.filepath)
-    print(len(render_image.pixels), list(render_image.size))
     pixels = render_image.pixels[:]
     new_pixels = []
     for i in range(len(render_image.pixels)//4):
       r, g, b, a = pixels[i*4:i*4+4]
-      if a == 0.0:
+      if a < 0.5:
         new_pixels += [r, g, b, 0.0]
-      elif r == 1.0 and g == 1.0 and b == 1.0:
+      elif r > 0.75 and g > 0.75 and b > 0.75:
         new_pixels += [1.0, 1.0, 1.0, 1.0]
       else:
         new_pixels += [1.0, 0.0, 0.0, 1.0]
@@ -331,38 +330,56 @@ for obj in scene.objects:
         break
     if bsdf_node:
       nodes.remove(bsdf_node)
+    output_node.location = (800, 400)
     
     image_node = nodes.new("ShaderNodeTexImage")
     image_node.image = bpy.data.images[tex_name]
     image_nodes.append(image_node)
     
     toon_node = nodes.new("ShaderNodeBsdfToon")
+    toon_node.location = (400, 400)
     
     if tex_name == "mayuh.1.png":
       # Eyebrows. Need transparent backgrounds.
       mix_node = nodes.new("ShaderNodeMixShader")
+      mix_node.location = (600, 200)
       transparent_node = nodes.new("ShaderNodeBsdfTransparent")
+      transparent_node.location = (400, 200)
+      greater_than_node = nodes.new("ShaderNodeMath")
+      greater_than_node.operation = "GREATER_THAN"
+      greater_than_node.inputs[1].default_value = 0.25 # This is to make the transparency binary
+      greater_than_node.location = (400, 0)
       
       link = links.new(image_node.outputs[0], toon_node.inputs[0])
-      link = links.new(image_node.outputs[1], mix_node.inputs[0])
+      link = links.new(image_node.outputs[1], greater_than_node.inputs[0])
+      link = links.new(greater_than_node.outputs[0], mix_node.inputs[0])
       link = links.new(transparent_node.outputs[0], mix_node.inputs[1])
       link = links.new(toon_node.outputs[0], mix_node.inputs[2])
       link = links.new(mix_node.outputs[0], output_node.inputs[0])
     elif tex_name == "eyeh.1.png":
       # Eyes. Need transparent backgrounds and for the pupil to be overlayed on the whites of the eyes.
       mix_node = nodes.new("ShaderNodeMixShader")
+      mix_node.location = (600, 200)
       transparent_node = nodes.new("ShaderNodeBsdfTransparent")
+      transparent_node.location = (400, 200)
+      greater_than_node = nodes.new("ShaderNodeMath")
+      greater_than_node.operation = "GREATER_THAN"
+      greater_than_node.inputs[1].default_value = 0.25
+      greater_than_node.location = (400, 0)
       mixrgb_node = nodes.new("ShaderNodeMixRGB")
       mixrgb_node.blend_type = "MULTIPLY"
+      mixrgb_node.location = (200, 200)
       pupil_image_node = nodes.new("ShaderNodeTexImage")
       pupil_image_node.image = bpy.data.images["hitomi.png"]
+      pupil_image_node.location = (0, -300)
       image_nodes.append(pupil_image_node)
       
       link = links.new(image_node.outputs[0], mixrgb_node.inputs[1])
       link = links.new(pupil_image_node.outputs[0], mixrgb_node.inputs[2])
       link = links.new(pupil_image_node.outputs[1], mixrgb_node.inputs[0])
       link = links.new(mixrgb_node.outputs[0], toon_node.inputs[0])
-      link = links.new(image_node.outputs[1], mix_node.inputs[0])
+      link = links.new(image_node.outputs[1], greater_than_node.inputs[0])
+      link = links.new(greater_than_node.outputs[0], mix_node.inputs[0])
       link = links.new(transparent_node.outputs[0], mix_node.inputs[1])
       link = links.new(toon_node.outputs[0], mix_node.inputs[2])
       link = links.new(mix_node.outputs[0], output_node.inputs[0])
