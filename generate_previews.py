@@ -166,6 +166,11 @@ for tex_header in tex_headers:
       if tex.image.name == tex_image_name:
         tex.extension = wrap_mode
 
+# Increase z-index of the eye and eyebrow meshes (for the masks).
+for mat_name in ["m1eyeL", "m4eyeR", "m8mayuL", "m11mayuR"]:
+  mat = bpy.data.materials[mat_name]
+  mat.offset_z = 1000
+
 # Now generate the masks by replacing the model's textures with the texture masks and disabling shading.
 for item in bpy.data.materials:
   item.use_shadeless = True
@@ -347,6 +352,42 @@ for tex_image_name, wrap_mode in tex_wrap_mode_for_image_name.items():
   for image_node in image_nodes:
     if image_node.image.name == tex_image_name:
       image_node.extension = wrap_mode
+
+# Use the compositor to render the eyes and eyebrows on a separate layer from the rest of the model, and then layer that on top to simulate the eye z-indexing through the hair effect.
+# Create a new render layer and put only the eyes and eyebrows on it.
+eyes_and_eyebrows_layer = scene.render.layers.new("eyes and eyebrows layer")
+eyes_and_eyebrows_layer.layers = [i == 1 for i in range(len(eyes_and_eyebrows_layer.layers))]
+for obj in scene.objects:
+  if obj.data.__class__ == bpy.types.Mesh:
+    if obj.data.materials[0].name in ["m1eyeL", "m4eyeR", "m8mayuL", "m11mayuR"]:
+      obj.layers = [i == 1 for i in range(len(obj.layers))]
+main_layer = scene.render.layers["RenderLayer"]
+main_layer.layers = [i == 0 for i in range(len(main_layer.layers))]
+scene.layers = [True for i in range(len(scene.layers))]
+
+scene.use_nodes = True
+nodes = scene.node_tree.nodes
+links = scene.node_tree.links
+for node in nodes:
+  nodes.remove(node)
+
+layer1_node = nodes.new("CompositorNodeRLayers")
+layer1_node.layer = "RenderLayer"
+layer1_node.location = (0, 400)
+
+layer2_node = nodes.new("CompositorNodeRLayers")
+layer2_node.layer = "eyes and eyebrows layer"
+layer2_node.location = (0, 0)
+
+alpha_over_node = nodes.new("CompositorNodeAlphaOver")
+alpha_over_node.location = (200, 200)
+
+output_node = nodes.new('CompositorNodeComposite')   
+output_node.location = (400, 200)
+
+link = links.new(layer1_node.outputs[0], alpha_over_node.inputs[1])
+link = links.new(layer2_node.outputs[0], alpha_over_node.inputs[2])
+link = links.new(alpha_over_node.outputs[0], output_node.inputs[0])
 
 # Render the hero clothes preview.
 if not os.path.exists(preview_dir):
