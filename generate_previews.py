@@ -29,6 +29,9 @@ if not os.path.isfile(bdl_file_path):
 tex_headers_path = os.path.join(blend_file_directory, "tex_headers.json")
 if not os.path.isfile(tex_headers_path):
   raise Exception("tex_headers.json was not found.")
+model_metadata_path = os.path.join(blend_file_directory, "metadata.txt")
+if not os.path.isfile(model_metadata_path):
+  raise Exception("metadata.txt was not found.")
 temp_dir = tempfile.mkdtemp()
 
 # Need to detect if this model is based on Link, or based on Tetra/Medli, since detecting which mesh is the hat/belt buckle is different for Tetra and Medli compared to Link.
@@ -172,6 +175,16 @@ for tex_header in tex_headers:
       if tex.image.name == tex_image_name:
         tex.extension = wrap_mode
 
+has_colored_eyebrows = False
+with open(model_metadata_path) as f:
+  for line in f.readlines():
+    if line.startswith("has_colored_eyebrows: "):
+      value = line[len("has_colored_eyebrows: "):].strip().lower()
+      if value == "true":
+        has_colored_eyebrows = True
+      elif value == "false":
+        has_colored_eyebrows = False
+
 # Increase z-index of the eye and eyebrow meshes (for the masks).
 for mat_name in ["m1eyeL", "m4eyeR", "m8mayuL", "m11mayuR"]:
   mat = bpy.data.materials[mat_name]
@@ -218,7 +231,11 @@ for prefix in ["hero", "casual"]:
       textures_to_not_mask = ["katsuraS3TC.png", "eyeh.1.png", "mayuh.1.png"]
     elif curr_color_name == "Hair":
       textures_to_mask = ["katsuraS3TC.png"]
-      textures_to_not_mask = ["mouthS3TC.1.png", "eyeh.1.png", "mayuh.1.png"]
+      textures_to_not_mask = ["mouthS3TC.1.png", "eyeh.1.png"]
+      if has_colored_eyebrows:
+        textures_to_mask.append("mayuh.1.png")
+      else:
+        textures_to_not_mask.append("mayuh.1.png")
     else:
       textures_to_mask = []
       textures_to_not_mask = ["mouthS3TC.1.png", "eyeh.1.png", "mayuh.1.png", "katsuraS3TC.png"]
