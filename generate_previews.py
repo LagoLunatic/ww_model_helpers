@@ -42,6 +42,9 @@ with open(bdl_file_path, "rb") as f:
     hat_material_name = "m18ear_3_"
     belt_buckle_material_name = "m23ear_8_"
 
+scene.objects.active = scene.objects[0]
+bpy.ops.object.mode_set(mode="OBJECT")
+
 # Append the casual hair mesh.
 casual_hair_model_path = os.path.join(blend_file_directory, "..", "katsura", "katsura.blend", "Object")
 casual_hair_model_mesh_name = "mesh-0"
