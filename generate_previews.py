@@ -8,6 +8,7 @@ import json
 import struct
 import tempfile
 import shutil
+import re
 
 context = bpy.context
 scene = context.scene
@@ -175,15 +176,18 @@ for tex_header in tex_headers:
       if tex.image.name == tex_image_name:
         tex.extension = wrap_mode
 
-has_colored_eyebrows = False
+model_metadata = {}
 with open(model_metadata_path) as f:
   for line in f.readlines():
-    if line.startswith("has_colored_eyebrows: "):
-      value = line[len("has_colored_eyebrows: "):].strip().lower()
-      if value == "true":
-        has_colored_eyebrows = True
-      elif value == "false":
-        has_colored_eyebrows = False
+    match = re.search(r"^([^\s:]+): (.+)$", line)
+    if match:
+      key = match.group(1)
+      val = match.group(2).strip()
+      if val.lower() == "true":
+        val = True
+      elif val.lower() == "false":
+        val = False
+      model_metadata[key] = val
 
 # Increase z-index of the eye and eyebrow meshes (for the masks).
 for mat_name in ["m1eyeL", "m4eyeR", "m8mayuL", "m11mayuR"]:
@@ -221,24 +225,32 @@ for prefix in ["hero", "casual"]:
   
   update_objects_hidden_in_render(prefix)
   
+  has_colored_eyebrows = model_metadata.get("has_colored_eyebrows", False)
+  hands_color_name = model_metadata.get(prefix + "_hands_color_name", "Skin")
+  mouth_color_name = model_metadata.get(prefix + "_mouth_color_name", "Skin")
+  eyebrow_color_name = model_metadata.get(prefix + "_eyebrow_color_name", "Hair")
+  casual_hair_color_name = model_metadata.get("casual_hair_color_name", "Hair")
+  
   for color_mask_file_path in color_mask_file_paths:
     file_basename = os.path.splitext(os.path.basename(color_mask_file_path))[0]
     assert file_basename.startswith(prefix + "_")
     curr_color_name = file_basename[len(prefix + "_"):]
     
-    if curr_color_name == "Skin":
-      textures_to_mask = ["mouthS3TC.1.png"]
-      textures_to_not_mask = ["katsuraS3TC.png", "eyeh.1.png", "mayuh.1.png"]
-    elif curr_color_name == "Hair":
-      textures_to_mask = ["katsuraS3TC.png"]
-      textures_to_not_mask = ["mouthS3TC.1.png", "eyeh.1.png"]
-      if has_colored_eyebrows:
-        textures_to_mask.append("mayuh.1.png")
-      else:
-        textures_to_not_mask.append("mayuh.1.png")
+    textures_to_mask = []
+    textures_to_not_mask = []
+    if has_colored_eyebrows and curr_color_name == eyebrow_color_name:
+      textures_to_mask.append("mayuh.1.png")
     else:
-      textures_to_mask = []
-      textures_to_not_mask = ["mouthS3TC.1.png", "eyeh.1.png", "mayuh.1.png", "katsuraS3TC.png"]
+      textures_to_not_mask.append("mayuh.1.png")
+    if curr_color_name == casual_hair_color_name:
+      textures_to_mask.append("katsuraS3TC.png")
+    else:
+      textures_to_not_mask.append("katsuraS3TC.png")
+    if curr_color_name == mouth_color_name:
+      textures_to_mask.append("mouthS3TC.1.png")
+    else:
+      textures_to_not_mask.append("mouthS3TC.1.png")
+    textures_to_not_mask.append("eyeh.1.png")
     
     # Change the textures to be completely red or white, but also preserve the original alpha channel.
     for texture_name in textures_to_mask:
