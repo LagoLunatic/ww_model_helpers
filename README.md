@@ -13,6 +13,9 @@ Extract the contents of the SuperBMD zip and put them in a folder named `SuperBM
 It's also recommended that you download J3D Model Viewer: https://github.com/LordNed/J3D-Model-Viewer/releases/latest  
 This program allows you to view models in Wind Waker's model formats (BMD and BDL) the way they would actually appear in game. It can even load and preview animations. This makes it much faster to preview changes you make to a model than it would be to load up Wind Waker itself with the changed model.
 
+You will also need a 3D modeling program. I recommend Blender because it's free and is known to work for modifying Wind Waker models: https://www.blender.org/
+Note that you should use Blender 2.79. Blender 2.78 and earlier don't work - they screw up the model's skeleton when importing or exporting the .dae file.
+
 ## Tutorial
 
 This basic tutorial will go over the process of converting Link's main model and a couple extras from Wind Waker's format (BDL) to a COLLADA .dae file (which can be modified in regular modeling programs such as Blender) and then back to Wind Waker's format (BDL) and getting the model ingame.  
