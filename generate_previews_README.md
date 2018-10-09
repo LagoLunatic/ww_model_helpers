@@ -16,5 +16,5 @@ The required folder structure for running the script is as follows:
   - katsura (casual hair model folder)
     - katsura.blend
 
-If the script runs successfully with no errors, a `preview` folder should have been created inside the `cl` folder. This `preview` folder should have a render of your model in hero's clothes, a render your model in casual clothes, and one color mask for each custom color.  
+If the script runs successfully with no errors, a `preview` folder should have been created inside the `cl` folder. This `preview` folder should have a render of your model in hero's clothes, a render of your model in casual clothes, and one color mask image for each custom color.  
 If they look correct, you can just move the entire `preview` folder into the folder the randomizer will load the custom model from (so that it's next to Link.arc). Then test it out in the randomizer to make sure it works correctly.
