@@ -19,11 +19,14 @@ if not blend_file_directory:
   raise Exception("Blend file is not saved. Cannot determine the proper directory.")
 color_masks_dir = os.path.join(blend_file_directory, "color_masks")
 if not os.path.isdir(color_masks_dir):
-  raise Exception("color_masks diretory was not found.")
+  raise Exception("color_masks directory was not found.")
 preview_dir = os.path.join(blend_file_directory, "preview")
 casual_clothes_tex_path = os.path.join(blend_file_directory, "..", "linktexbci4.png")
 if not os.path.isfile(casual_clothes_tex_path):
   raise Exception("Casual clothes texture (linktexbci4.png) was not found.")
+pupil_image_path = os.path.join(blend_file_directory, "hitomi.png")
+if not os.path.isfile(pupil_image_path):
+  raise Exception("Pupil texture (hitomi.png) was not found.")
 bdl_file_path = os.path.join(blend_file_directory, "cl.bdl")
 if not os.path.isfile(bdl_file_path):
   raise Exception("cl.bdl was not found.")
@@ -33,6 +36,9 @@ if not os.path.isfile(tex_headers_path):
 model_metadata_path = os.path.join(blend_file_directory, "metadata.txt")
 if not os.path.isfile(model_metadata_path):
   raise Exception("metadata.txt was not found.")
+casual_hair_model_path = os.path.join(blend_file_directory, "..", "katsura", "katsura.blend")
+if not os.path.isfile(casual_hair_model_path):
+  raise Exception("Casual hair model (katsura.blend) was not found.")
 temp_dir = tempfile.mkdtemp()
 
 # Need to detect if this model is based on Link, or based on Tetra/Medli, since detecting which mesh is the hat/belt buckle is different for Tetra and Medli compared to Link.
@@ -50,10 +56,9 @@ scene.objects.active = scene.objects[0]
 bpy.ops.object.mode_set(mode="OBJECT")
 
 # Append the casual hair mesh.
-casual_hair_model_path = os.path.join(blend_file_directory, "..", "katsura", "katsura.blend", "Object")
 casual_hair_model_mesh_name = "mesh-0"
 bpy.ops.wm.append(
-  directory=casual_hair_model_path + "\\", # Needs to have a trailing slash
+  directory=casual_hair_model_path + "\\Object\\", # Needs to have a trailing slash
   filename=casual_hair_model_mesh_name,
 )
 
@@ -317,7 +322,7 @@ for lamp_i in range(2):
     lamp.hide = True # Hide the second lamp from the viewport.
 
 # Create the pupil image.
-bpy.data.images.load(os.path.join(blend_file_directory, "hitomi.png"))
+bpy.data.images.load(pupil_image_path)
 
 # Create the Cycles materials for all objects.
 done_mat_names = []
