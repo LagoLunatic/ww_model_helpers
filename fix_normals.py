@@ -6,10 +6,15 @@ import bpy, bpy_types, bmesh
 # First duplicate all meshes.
 orig_meshes = []
 new_meshes = []
+orig_hidden_meshes = []
 for obj in bpy.context.scene.objects:
   obj.select = False
   
   if obj.data.__class__ == bpy_types.Mesh:
+    if obj.hide:
+      orig_hidden_meshes.append(obj)
+    obj.hide = False
+    
     orig_meshes.append(obj)
     
     new_obj = obj.copy()
@@ -55,4 +60,8 @@ bpy.ops.object.data_transfer(
 for obj in bpy.context.scene.objects:
   obj.select = False
 joined_mesh.select = True
-bpy.ops.object.delete() 
+bpy.ops.object.delete()
+
+# Re-hide any meshes that the user originally had hidden and we had to unhide.
+for obj in orig_hidden_meshes:
+  obj.hide = True
