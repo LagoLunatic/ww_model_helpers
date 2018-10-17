@@ -14,10 +14,9 @@ from wwlib.rarc import RARC
 class ModelConversionError(Exception):
   pass
 
-def convert_to_bmd(base_folder, file_base_name, superbmd_folder="SuperBMD"):
+def convert_to_bdl(base_folder, file_base_name, superbmd_folder="SuperBMD"):
   in_dae_path      = os.path.join(base_folder, file_base_name + ".dae")
   out_bdl_path     = os.path.join(base_folder, file_base_name + ".bdl")
-  out_bmd_path     = os.path.join(base_folder, file_base_name + ".bmd")
   tex_headers_path = os.path.join(base_folder, "tex_headers.json")
   materials_path   = os.path.join(base_folder, "materials.json")
   
@@ -34,18 +33,19 @@ def convert_to_bmd(base_folder, file_base_name, superbmd_folder="SuperBMD"):
   if matches:
     raise ModelConversionError("Error: All of the vertices in the following meshes are unweighted: " + (", ".join(matches)))
   
-  print("Converting %s to BMD" % in_dae_path)
+  print("Converting %s to BDL" % in_dae_path)
   
-  if os.path.isfile(out_bmd_path):
-    os.remove(out_bmd_path)
+  if os.path.isfile(out_bdl_path):
+    os.remove(out_bdl_path)
   
   command = [
     os.path.join(superbmd_folder, "SuperBMD.exe"),
     "-i", in_dae_path,
-    "-o", out_bmd_path,
+    "-o", out_bdl_path,
     "-x", tex_headers_path,
     "-m", materials_path,
     "-t", "all",
+    "--bdl",
   ]
   
   result = call(command)
@@ -54,23 +54,23 @@ def convert_to_bmd(base_folder, file_base_name, superbmd_folder="SuperBMD"):
     input()
     sys.exit(1)
   
-  return (out_bmd_path, out_bdl_path)
+  return out_bdl_path
 
-def unpack_sections(bmd_path):
-  with open(bmd_path, "rb") as f:
+def unpack_sections(bdl_path):
+  with open(bdl_path, "rb") as f:
     data = BytesIO(f.read())
   
   return unpack_sections_by_data(data)
   
 def unpack_sections_by_data(data):
-  bmd_size = data_len(data)
+  bdl_size = data_len(data)
   
   sections = OrderedDict()
   
   sections["header"] = BytesIO(read_bytes(data, 0, 0x20))
   
   offset = 0x20
-  while offset < bmd_size:
+  while offset < bdl_size:
     section_magic = read_str(data, offset, 4)
     section_size = read_u32(data, offset+4)
     sections[section_magic] = BytesIO(read_bytes(data, offset, section_size))
@@ -87,15 +87,9 @@ def pack_sections(sections):
   
   return data
 
-def convert_bmd_to_bdl(out_bmd_path, out_bdl_path, orig_bdl_path, sections_to_copy):
-  sections = unpack_sections(out_bmd_path)
+def copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy):
+  sections = unpack_sections(out_bdl_path)
   orig_sections = unpack_sections(orig_bdl_path)
-  
-  write_str(sections["header"], 4, "bdl4", 4)
-  write_u32(sections["header"], 0xC, 9) # section count must be increased to 9 to include MDL3
-  
-  if "MDL3" not in sections_to_copy:
-    raise Exception("MDL3 must be copied when converting to BDL")
   
   for section_magic in sections_to_copy:
     sections[section_magic] = orig_sections[section_magic]
@@ -123,12 +117,11 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   # Main body
   new_model_folder = os.path.join(custom_player_folder, "cl")
   if os.path.isdir(new_model_folder):
-    out_bmd, out_bdl = convert_to_bmd(new_model_folder, "cl")
-    orig_bdl = os.path.join(orig_link_folder, "cl", "cl.bdl")
-    link_arc.get_file_entry("cl.bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
+    out_bdl_path = convert_to_bdl(new_model_folder, "cl")
+    orig_bdl_path = os.path.join(orig_link_folder, "cl", "cl.bdl")
+    link_arc.get_file_entry("cl.bdl").data = copy_original_sections(out_bdl_path, orig_bdl_path,
       [
         "INF1",
-        "MDL3",
         "JNT1"
       ]
     )
@@ -149,16 +142,14 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
     #"sha",      # Hero's Shield
     #"shms",     # Mirror Shield
     #"ymsls00",  # Mirror Shield light ray
+    #"hboots",   # Iron Boots
   ]
   for model_basename in accessory_model_names:
     new_model_folder = os.path.join(custom_player_folder, model_basename)
     if os.path.isdir(new_model_folder):
-      out_bmd, out_bdl = convert_to_bmd(new_model_folder, model_basename)
-      if model_basename == "sha":
-        orig_bdl = os.path.join(orig_link_folder, "shms", "shms" + ".bdl")
-      else:
-        orig_bdl = os.path.join(orig_link_folder, model_basename, model_basename + ".bdl")
-      link_arc.get_file_entry(model_basename + ".bdl").data = convert_bmd_to_bdl(out_bmd, out_bdl, orig_bdl,
+      out_bdl_path = convert_to_bdl(new_model_folder, model_basename)
+      orig_bdl_path = os.path.join(orig_link_folder, model_basename, model_basename + ".bdl")
+      link_arc.get_file_entry(model_basename + ".bdl").data = copy_original_sections(out_bdl_path, orig_bdl_path,
         [
           "INF1",
           #"JNT1",
@@ -168,7 +159,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
           #"DRW1",
           #"MAT3",
           #"TEX1",
-          "MDL3",
+          #"MDL3",
         ]
       )
   
