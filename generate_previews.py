@@ -92,7 +92,7 @@ scene.objects.active = casual_hair_skeleton_root
 bones = casual_hair_skeleton_root.pose.bones
 for bone in bones:
   bone.rotation_mode = "XYZ"
-bones["cl_katsura"].location = (0, 83, -0.5) # TODO: Read head_jnt's position dynamically and use that here
+bones["cl_katsura"].location = (0, 83, -0.5)
 bones["cl_katsura"].rotation_euler.rotate_axis("X", math.radians(90.0))
 bones["cl_katsura"].rotation_euler.rotate_axis("Y", math.radians(90.0))
 bpy.ops.object.mode_set(mode="OBJECT")
