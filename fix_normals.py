@@ -39,21 +39,24 @@ bm.to_mesh(joined_mesh.data)
 joined_mesh.data.update()
 bm.clear()
 
-# Select the original meshes as the target of data transferring the normals.
-for obj in bpy.context.scene.objects:
-  if obj in orig_meshes:
-    obj.select = True
-    obj.data.use_auto_smooth = True
-  else:
-    obj.select = False
-# Set the joined mesh as the active object so it's the source of the normals.
-bpy.context.scene.objects.active = joined_mesh
+if len(joined_mesh.data.polygons) == 0:
+  print("Joined mesh has no faces, cannot transfer normals.")
+else:
+  # Select the original meshes as the target of data transferring the normals.
+  for obj in bpy.context.scene.objects:
+    if obj in orig_meshes:
+      obj.select = True
+      obj.data.use_auto_smooth = True
+    else:
+      obj.select = False
+  # Set the joined mesh as the active object so it's the source of the normals.
+  bpy.context.scene.objects.active = joined_mesh
 
-# Perform a data transfer on normals.
-bpy.ops.object.data_transfer(
-  data_type = "CUSTOM_NORMAL",
-  loop_mapping = "NEAREST_POLY",
-)
+  # Perform a data transfer on normals.
+  bpy.ops.object.data_transfer(
+    data_type = "CUSTOM_NORMAL",
+    loop_mapping = "NEAREST_POLY",
+  )
 
 # Finally delete the joined mesh.
 for obj in bpy.context.scene.objects:
