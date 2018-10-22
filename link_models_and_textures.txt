@@ -1,0 +1,172 @@
+
+### Models
+
+binfairy
+  Bottled fairy
+  No known issues or limitations.
+boomerang
+  Boomerang
+  No known issues or limitations.
+bottlecap
+  Bottle cap
+  No known issues or limitations.
+bow
+  Bow
+  No known issues or limitations.
+camera
+  Picto Box
+  No known issues or limitations.
+cl
+  Main player model
+  No known issues or limitations.
+fan
+  Deku Leaf (version used when blowing a gust of wind)
+  No known issues or limitations.
+  Just be careful not to remove duplicate vertices from the leaf - its two sides are perfectly overlapping but have opposite normals, so removing duplicates would screw it up and merge the two sides into one.
+fanb
+  Deku Leaf (version used when gliding)
+  No known issues or limitations.
+fansmall
+  Deku Leaf (version held in your hand when idle)
+  No known issues or limitations.
+hammer
+  Skull Hammer
+  No known issues or limitations.
+hands
+  Hands
+  No known issues or limitations.
+hookshot
+  Hookshot
+  No known issues or limitations.
+hyoinomi
+  Hyoi Pear
+  No known issues or limitations.
+katsura
+  Casual hair
+  No known issues or limitations.
+letter
+  Letter from the mail that Link reads
+  No known issues or limitations.
+podms
+  Master Sword Sheath
+  No known issues or limitations.
+pring
+  Power Bracelets
+  No known issues or limitations.
+sha
+  Hero's Shield
+  No known issues or limitations.
+swa
+  Hero's Sword Blade
+  No known issues or limitations.
+swgripa
+  Hero's Sword Hilt
+  No known issues or limitations.
+tceiver
+  Tingle Tuner
+  No known issues or limitations.
+tetolach
+  Pirate's Charm
+  No known issues or limitations.
+yamu
+  Hero's Charm
+  No known issues or limitations.
+esa
+  All-Purpose Bait
+  No known issues or limitations.
+hboots
+  Iron Boots
+  No known issues or limitations.
+ropeend
+  Grappling Hook (not the rope, just the metal hook part at the end)
+  No known issues or limitations.
+telescope
+  Telescope
+  No known issues or limitations.
+garwfi00
+  Cone of flames around a fire arrow
+  No known issues or limitations.
+garwfi01
+  Cone of ice around an ice arrow
+  No known issues or limitations.
+garwg00
+  Cone of light around a light arrow
+  No known issues or limitations.
+arrow
+  Arrow
+  No known issues or limitations.
+arrowglitter
+  Light Arrow
+  No known issues or limitations.
+binho
+  Bottled forest firefly
+  Does NOT work - becomes rotated improperly and doesn't face the camera.
+binliquid
+  Bottled liquid (full)
+  No known issues or limitations.
+binliquidh
+  Bottled liquid (half full)
+  No known issues or limitations.
+bomb
+  Bombs
+  No known issues or limitations.
+bottleemp
+  Bottle
+  No known issues or limitations.
+cutfh
+  White stabbing effect around the tip of Hero's Sword blade when the player attacks while moving forward
+  No known issues or limitations.
+cutfm
+  White stabbing effect around the tip of Master Sword blade when the player attacks while moving forward
+  No known issues or limitations.
+gicer00
+  ??? A chunk of ice?
+gicer01
+  ??? Crashes J3D viewer, even the original unedited model
+gwp00
+  ??? Some kind of rod inside another rod
+shms
+  Mirror Shield
+  In order to edit this properly, you need to ensure every vertex in the model is weighted to at least 2 bones.
+  Any vertices weighted to only a single bone will reach extremely far into the distance ingame for some reason.
+suimen_munya
+  White circle on the water's surface around Link when he's swimming
+  No known issues or limitations.
+swgripms
+  Master Sword Hilt
+  No known issues or limitations.
+swms
+  Master Sword Blade
+  No known issues or limitations.
+takt
+  Wind Waker
+  No known issues or limitations.
+yaura00
+  Aura coming up off the Magic Armor.
+  Does NOT work - just becomes a single flat plane sticking out the front of the player's chest.
+ybafo00
+  ??? Looks like a circular disk thing?
+yhsls00
+  ??? Shaped kinda like the tip of a sword?
+ymgcs00
+  Magic Armor (the main shell around the player)
+  No known issues or limitations.
+ymsli00
+  ??? Looks like a sword?
+ymsls00
+  Mirror Shield Light Ray
+  Does NOT work - model is completely invisible ingame.
+yuchw00
+  ??? Looks kinda like a sideways hat on another sideways hat?
+
+### Textures
+
+blur
+  ??? A gradient from black to white
+linktexbci4
+  Casual clothes texture
+  No known issues or limitations.
+  The game swaps cl.bdl's main linktexS3TC texture out for this one when the player is wearing casual clothes.
+rock_mark
+  Icon that appears when you point the hookshot at something hookshottable.
+  No known issues or limitations.

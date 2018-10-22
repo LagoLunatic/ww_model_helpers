@@ -13,7 +13,7 @@ Extract the contents of the SuperBMD zip and put them in a folder named `SuperBM
 It's also recommended that you download J3D Model Viewer: https://github.com/LordNed/J3D-Model-Viewer/releases/latest  
 This program allows you to view models in Wind Waker's model formats (BMD and BDL) the way they would actually appear in game. It can even load and preview animations. This makes it much faster to preview changes you make to a model than it would be to load up Wind Waker itself with the changed model.
 
-You will also need a 3D modeling program. I recommend Blender because it's free and is known to work for modifying Wind Waker models: https://www.blender.org/
+You will also need a 3D modeling program. I recommend Blender because it's free and is known to work for modifying Wind Waker models: https://www.blender.org/  
 Note that you should use Blender 2.79. Blender 2.78 and earlier don't work - they screw up the model's skeleton when importing or exporting the .dae file.
 
 ## Tutorial
@@ -37,7 +37,10 @@ If everything worked correctly, your `Link Original` folder should now have 57 s
 
 ### Step 3: Copy the files you want to edit.  
 The `Link Original` folder needs to have the original models in it, so before modifying anything let's make a copy of them in the `Custom Model` folder.  
-For the sake of this tutorial we'll copy the `cl` folder (containing Link's main model), the `hands` folder (containing the model for Link's various hand poses), the `katsura` folder (containing the model for the back of Link's hair when he's in his casual clothes), and `linktexbci4.png` (Link's texture for when he's in his casual clothes). But if you want to modify other files, you would copy those as well (e.g. copy the `pring` folder if you want to modify the Power Bracelets). The only thing you absolutely have to copy is `cl`.
+For the sake of this tutorial we'll copy the `cl` folder (containing Link's main model), the `hands` folder (containing the model for Link's various hand poses), the `katsura` folder (containing the model for the back of Link's hair when he's in his casual clothes), and `linktexbci4.png` (Link's texture for when he's in his casual clothes).
+
+But if you want to modify other files, you would copy those as well (e.g. copy the `pring` folder if you want to modify the Power Bracelets). You shouldn't copy folders for any models you don't intend to modify.  
+You can find a full list of what all models and textures inside Link.arc are in the link_models_and_textures.txt file included with these scripts.
 
 ### Step 4: Open the model.  
 Now you can open Link's model in a 3D modeling program. This tutorial will assume you use Blender, but other modeling programs probably work too.  
@@ -52,7 +55,7 @@ So after importing `cl.dae`, you should go to Save As and save `cl.blend` right 
 Now that you have the model in Blender, you might notice that the shading on parts of the model looks wrong. For example, around Link's mouth. This is because Blender's .dae importer currently does not import custom normals from the .dae file.  
 In order to fix the normals, use Blender's text editor to open the script named `fix_normals.py` that comes with the WW Model Helpers download. Click "Run Script", and it should automatically fix the shading on Link's mouth and such.
 
-Another issue is that Blender is displaying the model without any textures. It's not strictly necessary, but if you want to see textures, first change Blender's view mode to Material. Then open the script named `make_materials_shadeless.py` that comes with the WW Model Helpers download, and click "Run Script".
+Another issue is that Blender is displaying the model without any textures. It's not strictly necessary, but if you want to see textures, first change Blender's view mode to Material. Then open the script named `make_materials_shadeless.py` that comes with the WW Model Helpers download, and click "Run Script".  
 If the model displays as completely white after doing this, your model might not have any textures imported with it. This can be caused by you moving the texture .png files after extracting them from the model but before importing the model into Blender - the .dae file stores the paths to the textures as absolute paths on your hard drive, so moving them will cause Blender to not be able to find them.
 
 ### Step 5: Convert the model back to Wind Waker's format.  
@@ -65,16 +68,7 @@ What pack_player does is automate converting the .dae models in all the folders 
 It also converts any .png images back to .bti images that the game can use.  
 Then, it packs all of Link's models and textures into a new Link.arc, which is located in your `Custom Model` folder.
 
-Note: Currently pack_player does not support all of Link's models and textures. The only ones it supports at the moment are:
-* Link's main model (`cl` folder)
-* Hands texture (`hands/handsS3TC.png` file)
-* Casual clothes back hair model (`katsura` folder)
-* Casual clothes texture (`linktexbci4.png` file)
-* Hero's Charm model (`yamu` folder)
-* Power bracelets model (`pring` folder)
-* Hyoi Pear model (`hyoinomi` folder)
-* Hero's Sword blade model (`swa` folder)
-* Hero's Sword hilt model (`swgripa` folder)
+Note: pack_player supports all of the models and textures in Link.arc, but a few of the models cannot be properly repacked by SuperBMD currently. Refer to link_models_and_textures.txt for a list of what all the models and textures are and any technical limitations on specific models.  
 
 ### Step 6: Preview the changed model in J3D Model Viewer (optional).
 
