@@ -70,6 +70,9 @@ Then, it packs all of Link's models and textures into a new Link.arc, which is l
 
 Note: pack_player supports all of the models and textures in Link.arc, but a few of the models cannot be properly repacked by SuperBMD currently. Refer to link_models_and_textures.txt for a list of what all the models and textures are and any technical limitations on specific models.  
 
+Note: By default, pack_player will modify the texture of hands.bdl, but not the model itself. If you want to edit the shape of the hand poses in hands.bdl, you need to pass the -repackhands argument like so:  
+`pack_player.exe -link "path/to/Link Original" -custom "path/to/Custom Model" -repackhands`
+
 ### Step 6: Preview the changed model in J3D Model Viewer (optional).
 
 Before putting your new model in game, it's a good idea to load it up in J3D Model Viewer and make sure it looks right there. If it doesn't, you don't need to waste your time replacing the game's model and booting the game up.
