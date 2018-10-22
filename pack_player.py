@@ -107,7 +107,7 @@ def copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy):
 
 
 
-def convert_all_player_models(orig_link_folder, custom_player_folder):
+def convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=False):
   orig_link_arc_path = os.path.join(orig_link_folder, "Link.arc")
   with open(orig_link_arc_path, "rb") as f:
     rarc_data = BytesIO(f.read())
@@ -127,6 +127,9 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   
   
   for model_basename in all_model_basenames:
+    if model_basename == "hands" and not repack_hands_model:
+      continue
+    
     new_model_folder = os.path.join(custom_player_folder, model_basename)
     if os.path.isdir(new_model_folder):
       out_bdl_path = convert_to_bdl(new_model_folder, model_basename)
@@ -158,16 +161,17 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
         data = BytesIO(f.read())
         link_arc.get_file_entry(texture_basename + ".bti").data = data
   
-  ## Import hands texture
-  #hands_tex_png = os.path.join(custom_player_folder, "hands", "handsS3TC.png")
-  #if os.path.isfile(hands_tex_png):
-  #  image = Image.open(hands_tex_png)
-  #  hands_model = link_arc.get_file("hands.bdl")
-  #  textures = hands_model.tex1.textures_by_name["handsS3TC"]
-  #  for texture in textures:
-  #    texture.replace_image(image)
-  #  hands_model.save_changes()
-  #  link_arc.get_file_entry("hands.bdl").data = hands_model.file_entry.data
+  if not repack_hands_model:
+    # Import hands texture
+    hands_tex_png = os.path.join(custom_player_folder, "hands", "handsS3TC.png")
+    if os.path.isfile(hands_tex_png):
+      image = Image.open(hands_tex_png)
+      hands_model = link_arc.get_file("hands.bdl")
+      textures = hands_model.tex1.textures_by_name["handsS3TC"]
+      for texture in textures:
+        texture.replace_image(image)
+      hands_model.save_changes()
+      link_arc.get_file_entry("hands.bdl").data = hands_model.file_entry.data
   
   
   # Print out changed file sizes
@@ -189,9 +193,19 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
     f.write(link_arc.data.read())
 
 if __name__ == "__main__":
-  if len(sys.argv) != 5 or sys.argv[1] != "-link" or sys.argv[3] != "-custom":
+  args_valid = False
+  repack_hands = False
+  if len(sys.argv) == 5 and sys.argv[1] == "-link" and sys.argv[3] == "-custom":
+    args_valid = True
+  elif len(sys.argv) == 6 and sys.argv[1] == "-link" and sys.argv[3] == "-custom" and sys.argv[5] == "-repackhands":
+    args_valid = True
+    repack_hands = True
+  
+  if not args_valid:
     print("Invalid arguments. Proper format:")
     print("  pack_player -link \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
+    print("Or, if you want to modify the hands.bdl model and not just its texture, include the -repackhands argument:")
+    print("  pack_player -link \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\" -repackhands")
     sys.exit(1)
   
   orig_link_folder = sys.argv[2]
@@ -210,7 +224,7 @@ if __name__ == "__main__":
     sys.exit(1)
   
   try:
-    convert_all_player_models(orig_link_folder, custom_player_folder)
+    convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=repack_hands)
   except ModelConversionError as e:
     print(e)
     sys.exit(1)
