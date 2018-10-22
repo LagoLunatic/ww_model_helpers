@@ -7,15 +7,10 @@ from subprocess import call
 sys.path.insert(0, "./wwrando")
 from wwlib.rarc import RARC
 from wwlib.bti import BTIFile
-from fs_helpers import *
 
 def extract_all_models(rarc_path, filenames):
   with open(rarc_path, "rb") as f:
     data = BytesIO(f.read())
-  magic = read_str(data, 0, 4)
-  if magic != "RARC":
-    print("Specified file to extract is not a RARC archive. Aborting.")
-    sys.exit(1)
   rarc = RARC(data)
   
   rarc_basename = os.path.splitext(os.path.basename(rarc_path))[0]
