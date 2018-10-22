@@ -114,86 +114,61 @@ def convert_all_player_models(orig_link_folder, custom_player_folder):
   link_arc = RARC(rarc_data)
   
   
-  # Main body
-  new_model_folder = os.path.join(custom_player_folder, "cl")
-  if os.path.isdir(new_model_folder):
-    out_bdl_path = convert_to_bdl(new_model_folder, "cl")
-    orig_bdl_path = os.path.join(orig_link_folder, "cl", "cl.bdl")
-    link_arc.get_file_entry("cl.bdl").data = copy_original_sections(out_bdl_path, orig_bdl_path,
-      [
-        "INF1",
-        "JNT1"
-      ]
-    )
-  else:
-    raise Exception("No main model (cl) folder found")
+  all_model_basenames = []
+  all_texture_basenames = []
+  for file_entry in link_arc.file_entries:
+    if file_entry.is_dir:
+      continue
+    basename, file_ext = os.path.splitext(file_entry.name)
+    if file_ext == ".bdl":
+      all_model_basenames.append(basename)
+    if file_ext == ".bti":
+      all_texture_basenames.append(basename)
   
-  accessory_model_names = [
-    "pring",    # Power Bracelets
-    "yamu",     # Hero's Charm
-    "hyoinomi", # Hyoi Pear
-    "katsura",  # Casual hair
-    "swa",      # Hero's Sword blade
-    "swgripa",  # Hero's Sword hilt
-    
-    # TODO:
-    #"swms",     # Master Sword blade
-    #"swgripms", # Master Sword hilt
-    #"sha",      # Hero's Shield
-    #"shms",     # Mirror Shield
-    #"ymsls00",  # Mirror Shield light ray
-    #"hboots",   # Iron Boots
-  ]
-  for model_basename in accessory_model_names:
+  
+  for model_basename in all_model_basenames:
     new_model_folder = os.path.join(custom_player_folder, model_basename)
     if os.path.isdir(new_model_folder):
       out_bdl_path = convert_to_bdl(new_model_folder, model_basename)
       orig_bdl_path = os.path.join(orig_link_folder, model_basename, model_basename + ".bdl")
-      link_arc.get_file_entry(model_basename + ".bdl").data = copy_original_sections(out_bdl_path, orig_bdl_path,
-        [
-          "INF1",
-          #"JNT1",
-          #"SHP1",
-          #"VTX1",
-          #"EVP1",
-          #"DRW1",
-          #"MAT3",
-          #"TEX1",
-          #"MDL3",
-        ]
-      )
+      
+      sections_to_copy = ["INF1"]
+      if model_basename == "cl":
+        sections_to_copy.append("JNT1")
+      
+      link_arc.get_file_entry(model_basename + ".bdl").data = copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy)
   
-  # Import hands texture
-  hands_tex_png = os.path.join(custom_player_folder, "hands", "handsS3TC.png")
-  if os.path.isfile(hands_tex_png):
-    image = Image.open(hands_tex_png)
-    hands_model = link_arc.get_file("hands.bdl")
-    textures = hands_model.tex1.textures_by_name["handsS3TC"]
-    for texture in textures:
+  for texture_basename in all_texture_basenames:
+    # Create texture BTI from PNG
+    casual_tex_png = os.path.join(custom_player_folder, texture_basename + ".png")
+    if os.path.isfile(casual_tex_png):
+      image = Image.open(casual_tex_png)
+      texture = link_arc.get_file(texture_basename + ".bti")
       texture.replace_image(image)
-    hands_model.save_changes()
-    link_arc.get_file_entry("hands.bdl").data = hands_model.file_entry.data
+      texture.save_changes()
+      casual_tex_bti = os.path.join(custom_player_folder, texture_basename + ".bti")
+      with open(casual_tex_bti, "wb") as f:
+        texture.file_entry.data.seek(0)
+        f.write(texture.file_entry.data.read())
+    
+    # Import texture BTI
+    casual_tex_bti = os.path.join(custom_player_folder, texture_basename + ".bti")
+    if os.path.isfile(casual_tex_bti):
+      with open(casual_tex_bti, "rb") as f:
+        data = BytesIO(f.read())
+        link_arc.get_file_entry(texture_basename + ".bti").data = data
   
-  # Create casual clothes texture BTI
-  casual_tex_png = os.path.join(custom_player_folder, "linktexbci4.png")
-  if os.path.isfile(casual_tex_png):
-    image = Image.open(casual_tex_png)
-    texture = link_arc.get_file("linktexbci4.bti")
-    texture.image_format = 4
-    texture.palette_format = 0
-    texture.replace_image(image)
-    texture.save_changes()
-    casual_tex_bti = os.path.join(custom_player_folder, "linktexbci4.bti")
-    with open(casual_tex_bti, "wb") as f:
-      texture.file_entry.data.seek(0)
-      f.write(texture.file_entry.data.read())
+  ## Import hands texture
+  #hands_tex_png = os.path.join(custom_player_folder, "hands", "handsS3TC.png")
+  #if os.path.isfile(hands_tex_png):
+  #  image = Image.open(hands_tex_png)
+  #  hands_model = link_arc.get_file("hands.bdl")
+  #  textures = hands_model.tex1.textures_by_name["handsS3TC"]
+  #  for texture in textures:
+  #    texture.replace_image(image)
+  #  hands_model.save_changes()
+  #  link_arc.get_file_entry("hands.bdl").data = hands_model.file_entry.data
   
-  # Import casual clothes texture BTI
-  casual_tex_bti = os.path.join(custom_player_folder, "linktexbci4.bti")
-  if os.path.isfile(casual_tex_bti):
-    with open(casual_tex_bti, "rb") as f:
-      data = BytesIO(f.read())
-      link_arc.get_file_entry("linktexbci4.bti").data = data
   
   # Print out changed file sizes
   with open(orig_link_arc_path, "rb") as f:
