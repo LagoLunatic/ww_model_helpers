@@ -120,9 +120,12 @@ cutfm
   White stabbing effect around the tip of Master Sword blade when the player attacks while moving forward
   No known issues or limitations.
 gicer00
-  ??? A chunk of ice?
+  Chunk of ice that forms when an Ice Arrow impacts a surface.
+  No known issues or limitations.
 gicer01
-  ??? Crashes J3D viewer, even the original unedited model
+  Pillar of ice that forms when an Ice Arrow hits water.
+  No known issues or limitations.
+  Note: Trying to open this model in J3D Model Viewer will crash.
 gwp00
   ??? Some kind of rod inside another rod
 shms
@@ -147,15 +150,17 @@ yaura00
 ybafo00
   ??? Looks like a circular disk thing?
 yhsls00
-  ??? Shaped kinda like the tip of a sword?
+  The glow around the Hero's Sword after drinking the Elixir Soup.
+  No known issues or limitations.
 ymgcs00
   Magic Armor (the main shell around the player)
   No known issues or limitations.
 ymsli00
-  ??? Looks like a sword?
+  The glow around the full power Master Sword, as well as around all forms of the Master Sword after drinking the Elixir Soup.
+  No known issues or limitations.
 ymsls00
   Mirror Shield Light Ray
-  Does NOT work - model is completely invisible ingame.
+  No known issues or limitations.
 yuchw00
   ??? Looks kinda like a sideways hat on another sideways hat?
 
