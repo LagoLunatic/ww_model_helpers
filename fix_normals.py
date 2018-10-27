@@ -1,5 +1,6 @@
 
 # This Blender Python script automatically fixes the normals for all meshes in a model in order to get around Blender's COLLADA importer ignoring custom normals.
+# If you want this script to only fix normals on *some* objects, simply select the objects you want to be ignored and press H to hide them. Then run the script to fix normals for the objects that are still visible. Finally press Alt+H to unhide the ignored objects.
 
 import bpy, bpy_types, bmesh
 
