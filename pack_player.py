@@ -6,10 +6,13 @@ from subprocess import call
 from collections import OrderedDict
 from PIL import Image
 import re
+import json
 
 sys.path.insert(0, "./wwrando")
 from fs_helpers import *
 from wwlib.rarc import RARC
+from wwlib.texture_utils import *
+from wwlib.bti import *
 
 class ModelConversionError(Exception):
   pass
@@ -147,6 +150,33 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     if os.path.isfile(casual_tex_png):
       image = Image.open(casual_tex_png)
       texture = link_arc.get_file(texture_basename + ".bti")
+      
+      tex_header_json_path = os.path.join(custom_player_folder, texture_basename + "_tex_header.json")
+      if os.path.isfile(tex_header_json_path):
+        with open(tex_header_json_path) as f:
+          tex_header = json.load(f)
+        
+        if "Format" in tex_header:
+          texture.image_format = ImageFormat[tex_header["Format"]]
+        if "PaletteFormat" in tex_header:
+          texture.palette_format = PaletteFormat[tex_header["PaletteFormat"]]
+        if "WrapS" in tex_header:
+          texture.wrap_s = WrapMode[tex_header["WrapS"]]
+        if "WrapT" in tex_header:
+          texture.wrap_t = WrapMode[tex_header["WrapT"]]
+        if "MagFilter" in tex_header:
+          texture.mag_filter = FilterMode[tex_header["MagFilter"]]
+        if "MinFilter" in tex_header:
+          texture.min_filter = FilterMode[tex_header["MinFilter"]]
+        if "AlphaSetting" in tex_header:
+          texture.alpha_setting = tex_header["AlphaSetting"]
+        if "LodBias" in tex_header:
+          texture.lod_bias = tex_header["LodBias"]
+        if "unknown2" in tex_header:
+          texture.unknown_2 = tex_header["unknown2"]
+        if "unknown3" in tex_header:
+          texture.unknown_3 = tex_header["unknown3"]
+      
       texture.replace_image(image)
       texture.save_changes()
       casual_tex_bti = os.path.join(custom_player_folder, texture_basename + ".bti")

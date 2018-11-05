@@ -3,6 +3,8 @@ import sys
 import os
 from io import BytesIO
 from subprocess import call
+from collections import OrderedDict
+import json
 
 sys.path.insert(0, "./wwrando")
 from wwlib.rarc import RARC
@@ -60,6 +62,21 @@ def extract_model_or_texture(file_entry, base_output_folder):
     output_png_name = os.path.join(output_folder, file_basename + ".png")
     bti = BTIFile(file_entry)
     bti.render().save(output_png_name)
+    
+    output_json_name = os.path.join(output_folder, file_basename + "_tex_header.json")
+    header = OrderedDict()
+    header["Format"] = bti.image_format.name
+    header["PaletteFormat"] = bti.palette_format.name
+    header["WrapS"] = bti.wrap_s.name
+    header["WrapT"] = bti.wrap_t.name
+    header["MagFilter"] = bti.mag_filter.name
+    header["MinFilter"] = bti.min_filter.name
+    header["AlphaSetting"] = bti.alpha_setting
+    header["LodBias"] = bti.lod_bias
+    header["unknown2"] = bti.unknown_2
+    header["unknown3"] = bti.unknown_3
+    with open(output_json_name, "w") as f:
+      json.dump(header, f, indent=2)
   else:
     superbmd_folder = "SuperBMD"
     command = [
