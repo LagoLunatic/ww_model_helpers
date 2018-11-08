@@ -138,8 +138,9 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
       out_bdl_path = convert_to_bdl(new_model_folder, model_basename)
       orig_bdl_path = os.path.join(orig_link_folder, model_basename, model_basename + ".bdl")
       
-      sections_to_copy = ["INF1"]
+      sections_to_copy = []
       if model_basename == "cl":
+        sections_to_copy.append("INF1")
         sections_to_copy.append("JNT1")
       
       link_arc.get_file_entry(model_basename + ".bdl").data = copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy)
