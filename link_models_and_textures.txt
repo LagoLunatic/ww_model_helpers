@@ -130,8 +130,7 @@ gwp00
   ??? Some kind of rod inside another rod
 shms
   Mirror Shield
-  In order to edit this properly, you need to ensure every vertex in the model is weighted to at least 2 bones.
-  Any vertices weighted to only a single bone will reach extremely far into the distance ingame for some reason.
+  No known issues or limitations.
 suimen_munya
   White circle on the water's surface around Link when he's swimming
   No known issues or limitations.
