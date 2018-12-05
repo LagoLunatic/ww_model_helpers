@@ -225,6 +225,8 @@ for image in orig_images:
       if tex.image == image:
         tex.image = mask_image
 
+orig_linktexS3TC_path = bpy.data.images["linktexS3TC.png"].filepath
+
 for prefix in ["hero", "casual"]:
   color_mask_file_paths = glob.glob(os.path.join(color_masks_dir, "%s_*.png" % prefix))
   
@@ -257,25 +259,39 @@ for prefix in ["hero", "casual"]:
       textures_to_not_mask.append("mouthS3TC.1.png")
     textures_to_not_mask.append("eyeh.1.png")
     
-    # Change the textures to be completely red or white, but also preserve the original alpha channel.
-    for texture_name in textures_to_mask:
-      image = bpy.data.images[texture_name + "_mask"]
-      pixels = image.pixels[:] # Convert the image's pixels to a tuple to increase performance when reading from it
+    # Change the textures to be completely red or white, but also preserve the original alpha channel from the texture (not the mask).
+    for texture_name in textures_to_mask + textures_to_not_mask:
+      mask_image = bpy.data.images[texture_name + "_mask"]
+      tex_image = bpy.data.images[texture_name]
+      tex_pixels = tex_image.pixels[:] # Convert the image's pixels to a tuple to increase performance when reading from it
       new_pixels = [] # Instead of modifying the image's pixels every loop, make a new list of pixels we edit for better performance
-      for i in range(len(image.pixels)//4):
-        orig_alpha = pixels[i*4+3]
-        new_pixels += [1.0, 0.0, 0.0, orig_alpha]
-      image.pixels[:] = new_pixels # Now update the image's actual pixels just once with our pixel list
-    for texture_name in textures_to_not_mask:
-      image = bpy.data.images[texture_name + "_mask"]
-      pixels = image.pixels[:]
-      new_pixels = []
-      for i in range(len(image.pixels)//4):
-        orig_alpha = pixels[i*4+3]
-        new_pixels += [1.0, 1.0, 1.0, orig_alpha]
-      image.pixels[:] = new_pixels
+      for i in range(len(mask_image.pixels)//4):
+        orig_alpha = tex_pixels[i*4+3]
+        if texture_name in textures_to_mask:
+          new_pixels += [1.0, 0.0, 0.0, orig_alpha]
+        else:
+          new_pixels += [1.0, 1.0, 1.0, orig_alpha]
+      mask_image.pixels[:] = new_pixels # Now update the image's actual pixels just once with our pixel list
+    
+    if prefix == "casual":
+      bpy.data.images["linktexS3TC.png"].filepath = casual_clothes_tex_path
+    else:
+      bpy.data.images["linktexS3TC.png"].filepath = orig_linktexS3TC_path
     
     bpy.data.images["linktexS3TC.png_mask"].filepath = os.path.join(color_masks_dir, "%s_%s.png" % (prefix, curr_color_name))
+    mask_image = bpy.data.images["linktexS3TC.png_mask"]
+    mask_pixels = mask_image.pixels[:]
+    tex_image = bpy.data.images["linktexS3TC.png"]
+    tex_pixels = tex_image.pixels[:]
+    new_pixels = []
+    for i in range(len(mask_image.pixels)//4):
+      orig_alpha = tex_pixels[i*4+3]
+      r = mask_pixels[i*4]
+      g = mask_pixels[i*4+1]
+      b = mask_pixels[i*4+2]
+      new_pixels += [r, g, b, orig_alpha]
+    mask_image.pixels[:] = new_pixels # Now update the image's actual pixels just once with our pixel list
+    
     scene.render.filepath = os.path.join(preview_dir, "preview_%s_%s.png" % (prefix, curr_color_name))
     bpy.ops.render.render(write_still=True)
     
@@ -362,24 +378,7 @@ for obj in scene.objects:
     toon_node = nodes.new("ShaderNodeBsdfToon")
     toon_node.location = (400, 400)
     
-    if tex_name == "mayuh.1.png":
-      # Eyebrows. Need transparent backgrounds.
-      mix_node = nodes.new("ShaderNodeMixShader")
-      mix_node.location = (600, 200)
-      transparent_node = nodes.new("ShaderNodeBsdfTransparent")
-      transparent_node.location = (400, 200)
-      greater_than_node = nodes.new("ShaderNodeMath")
-      greater_than_node.operation = "GREATER_THAN"
-      greater_than_node.inputs[1].default_value = 0.25 # This is to make the transparency binary
-      greater_than_node.location = (400, 0)
-      
-      link = links.new(image_node.outputs[0], toon_node.inputs[0])
-      link = links.new(image_node.outputs[1], greater_than_node.inputs[0])
-      link = links.new(greater_than_node.outputs[0], mix_node.inputs[0])
-      link = links.new(transparent_node.outputs[0], mix_node.inputs[1])
-      link = links.new(toon_node.outputs[0], mix_node.inputs[2])
-      link = links.new(mix_node.outputs[0], output_node.inputs[0])
-    elif tex_name == "eyeh.1.png":
+    if tex_name == "eyeh.1.png":
       # Eyes. Need transparent backgrounds and for the pupil to be overlayed on the whites of the eyes.
       mix_node = nodes.new("ShaderNodeMixShader")
       mix_node.location = (600, 200)
@@ -407,9 +406,22 @@ for obj in scene.objects:
       link = links.new(toon_node.outputs[0], mix_node.inputs[2])
       link = links.new(mix_node.outputs[0], output_node.inputs[0])
     else:
-      # Everything else. Just a simple toon shader.
+      # Everything else. Need transparent backgrounds.
+      mix_node = nodes.new("ShaderNodeMixShader")
+      mix_node.location = (600, 200)
+      transparent_node = nodes.new("ShaderNodeBsdfTransparent")
+      transparent_node.location = (400, 200)
+      greater_than_node = nodes.new("ShaderNodeMath")
+      greater_than_node.operation = "GREATER_THAN"
+      greater_than_node.inputs[1].default_value = 0.25 # This is to make the transparency binary
+      greater_than_node.location = (400, 0)
+      
       link = links.new(image_node.outputs[0], toon_node.inputs[0])
-      link = links.new(toon_node.outputs[0], output_node.inputs[0])
+      link = links.new(image_node.outputs[1], greater_than_node.inputs[0])
+      link = links.new(greater_than_node.outputs[0], mix_node.inputs[0])
+      link = links.new(transparent_node.outputs[0], mix_node.inputs[1])
+      link = links.new(toon_node.outputs[0], mix_node.inputs[2])
+      link = links.new(mix_node.outputs[0], output_node.inputs[0])
 
 # Change the texture wrapping mode again, but this time for cycles.
 for tex_image_name, wrap_mode in tex_wrap_mode_for_image_name.items():
@@ -458,6 +470,7 @@ link = links.new(alpha_over_node.outputs[0], output_node.inputs[0])
 # Render the hero clothes preview.
 if not os.path.exists(preview_dir):
   os.mkdir(preview_dir)
+bpy.data.images["linktexS3TC.png"].filepath = orig_linktexS3TC_path
 update_objects_hidden_in_render("hero")
 scene.render.filepath = os.path.join(preview_dir, "preview_hero.png")
 bpy.ops.render.render(write_still=True)
