@@ -149,6 +149,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     # Create texture BTI from PNG
     casual_tex_png = os.path.join(custom_player_folder, texture_basename + ".png")
     if os.path.isfile(casual_tex_png):
+      print("Converting %s from PNG to BTI" % texture_basename)
+      
       image = Image.open(casual_tex_png)
       texture = link_arc.get_file(texture_basename + ".bti")
       
