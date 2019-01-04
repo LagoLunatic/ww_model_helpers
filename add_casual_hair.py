@@ -20,14 +20,17 @@ bpy.ops.wm.append(
   filename=casual_hair_model_mesh_name,
 )
 
-# Pose the casual hair so it's not down by the player's feet.
+# Rig the casual hair mesh to the main cl.bdl skeleton, instead of the casual hair's own skeleton, so that it moves with the head when the head is posed.
 skeleton_root = scene.objects["skeleton_root"]
-casual_hair_skeleton_root = scene.objects["skeleton_root.001"]
-scene.objects.active = casual_hair_skeleton_root
-bpy.ops.object.mode_set(mode="POSE")
-bones = casual_hair_skeleton_root.pose.bones
-for bone in bones:
-  bone.rotation_mode = "XYZ"
-bones["cl_katsura"].location = (0, 83, -0.5)
-bones["cl_katsura"].rotation_euler.rotate_axis("X", math.radians(90.0))
-bones["cl_katsura"].rotation_euler.rotate_axis("Y", math.radians(90.0))
+casual_hair_mesh = bpy.data.objects[casual_hair_model_mesh_name + ".001"]
+casual_hair_mesh.modifiers["Armature"].object = skeleton_root
+casual_hair_mesh.vertex_groups["cl_katsura"].name = "head_jnt"
+
+# Finally translate and rotate the casual hair mesh so that it's not down by the player's feet.
+bpy.ops.object.mode_set(mode="EDIT")
+armature = bpy.data.objects["skeleton_root"]
+head_bone = armature.data.edit_bones["head_jnt"]
+casual_hair_mesh.location = head_bone.tail # Will be (0, 83, -0.5) if the head bone has not been moved from vanilla cl.bdl
+casual_hair_mesh.rotation_mode = "XYZ"
+casual_hair_mesh.rotation_euler.rotate_axis("X", math.radians(90.0))
+casual_hair_mesh.rotation_euler.rotate_axis("Y", math.radians(90.0))
