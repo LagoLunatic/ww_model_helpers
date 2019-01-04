@@ -23,6 +23,7 @@ fan
   Deku Leaf (version used when blowing a gust of wind)
   No known issues or limitations.
   Just be careful not to remove duplicate vertices from the leaf - its two sides are perfectly overlapping but have opposite normals, so removing duplicates would screw it up and merge the two sides into one.
+  Also make sure that mesh-1 is weighted to at least 2 bones. If it is weighted to only 1 bone, then mesh-0 will not be hidden when the player runs out of MP like it's supposed to be.
 fanb
   Deku Leaf (version used when gliding)
   No known issues or limitations.
