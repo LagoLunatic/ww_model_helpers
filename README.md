@@ -95,3 +95,18 @@ To have the randomizer load it, simply create a new folder inside the randomizer
 Alternatively, if you want to use the model in the vanilla game, replace the file files/res/Object/Link.arc with the new Link.arc.
 
 If everything went well, the game should load up correctly with no crashes or visual errors.
+
+## Running the scripts from source
+
+Download and install git from here: https://git-scm.com/downloads  
+Then clone this repository with git by running this in a command prompt:  
+`git clone --recurse-submodules https://github.com/LagoLunatic/ww_model_helpers.git`  
+
+Download and install Python 3.6.6 from here: https://www.python.org/downloads/release/python-366/  
+"Windows x86-64 executable installer" is the one you want if you're on Windows.  
+
+Then run `cd ww_model_helpers`, followed by `py -3.6 -m pip install -r wwrando/requirements.txt` to install dependencies.  
+
+Finally, you can run the scripts with these commands:  
+`py -3.6 extract_models.py`  
+`py -3.6 pack_player.py`  
