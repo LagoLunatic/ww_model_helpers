@@ -140,7 +140,7 @@ swgripms
   No known issues or limitations.
 swms
   Master Sword Blade
-  No known issues or limitations.
+  When editing this model, make sure at least one of the meshes is weighted to 2+ bones. If all meshes are weighted to only 1 bone, this model will crash ingame.
 takt
   Wind Waker
   No known issues or limitations.
