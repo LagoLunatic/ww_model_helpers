@@ -129,12 +129,16 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
       all_texture_basenames.append(basename)
   
   
+  found_any_files_to_modify = False
+  
   for model_basename in all_model_basenames:
     if model_basename == "hands" and not repack_hands_model:
       continue
     
     new_model_folder = os.path.join(custom_player_folder, model_basename)
     if os.path.isdir(new_model_folder):
+      found_any_files_to_modify = True
+      
       out_bdl_path = convert_to_bdl(new_model_folder, model_basename)
       orig_bdl_path = os.path.join(orig_link_folder, model_basename, model_basename + ".bdl")
       
@@ -149,6 +153,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     # Create texture BTI from PNG
     casual_tex_png = os.path.join(custom_player_folder, texture_basename + ".png")
     if os.path.isfile(casual_tex_png):
+      found_any_files_to_modify = True
+      
       print("Converting %s from PNG to BTI" % texture_basename)
       
       image = Image.open(casual_tex_png)
@@ -198,6 +204,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     # Import hands texture
     hands_tex_png = os.path.join(custom_player_folder, "hands", "handsS3TC.png")
     if os.path.isfile(hands_tex_png):
+      found_any_files_to_modify = True
+      
       image = Image.open(hands_tex_png)
       hands_model = link_arc.get_file("hands.bdl")
       textures = hands_model.tex1.textures_by_name["handsS3TC"]
@@ -224,6 +232,9 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   with open(link_arc_out_path, "wb") as f:
     link_arc.data.seek(0)
     f.write(link_arc.data.read())
+  
+  if not found_any_files_to_modify:
+    print("No models or textures to modify found. Repacked Link.arc with no changes.")
 
 if __name__ == "__main__":
   args_valid = False
