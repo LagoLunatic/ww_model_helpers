@@ -12,7 +12,7 @@ bottlecap
   No known issues or limitations.
 bow
   Bow
-  No known issues or limitations.
+  Make sure that all 3 of the meshes remain weighted to 2 or more bones. Which specific bones they are can be changed. But reducing the number of bones one of the bow's meshes is weighted to down to only 1 will cause the game to crash when the player takes the bow out.
 camera
   Picto Box
   No known issues or limitations.
