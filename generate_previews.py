@@ -211,9 +211,10 @@ for item in bpy.data.materials:
 
 # Don't blur the borders between red and white on the masks with image interpolation.
 for texture in bpy.data.textures:
-  texture.use_interpolation = False
-  texture.filter_type = "FELINE" # This filter seems to be the only one that can be made to have absolutely no antialiasing.
-  texture.filter_size = 0.1
+  if isinstance(texture, bpy.types.ImageTexture):
+    texture.use_interpolation = False
+    texture.filter_type = "FELINE" # This filter seems to be the only one that can be made to have absolutely no antialiasing.
+    texture.filter_size = 0.1
 
 # Make a copy of all images so we can change those into the masks.
 orig_images = list(bpy.data.images)
