@@ -119,6 +119,9 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   
   all_model_basenames = []
   all_texture_basenames = []
+  all_bone_anim_basenames = []
+  all_tev_anim_basenames = []
+  all_tex_anim_basenames = []
   for file_entry in link_arc.file_entries:
     if file_entry.is_dir:
       continue
@@ -127,6 +130,12 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
       all_model_basenames.append(basename)
     if file_ext == ".bti":
       all_texture_basenames.append(basename)
+    if file_ext == ".bck":
+      all_bone_anim_basenames.append(basename)
+    if file_ext == ".brk":
+      all_tev_anim_basenames.append(basename)
+    if file_ext == ".btk":
+      all_tex_anim_basenames.append(basename)
   
   
   found_any_files_to_modify = False
@@ -213,6 +222,29 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
         texture.replace_image(image)
       hands_model.save_changes()
       link_arc.get_file_entry("hands.bdl").data = hands_model.file_entry.data
+  
+  
+  # Repack animations.
+  for anim_basename in all_bone_anim_basenames:
+    anim_path = os.path.join(custom_player_folder, "#Bone animations", anim_basename + ".bck")
+    if os.path.isfile(anim_path):
+      with open(anim_path, "rb") as f:
+        data = BytesIO(f.read())
+        link_arc.get_file_entry(anim_basename + ".bck").data = data
+      
+  for anim_basename in all_tev_anim_basenames:
+    anim_path = os.path.join(custom_player_folder, "#TEV register animations", anim_basename + ".brk")
+    if os.path.isfile(anim_path):
+      with open(anim_path, "rb") as f:
+        data = BytesIO(f.read())
+        link_arc.get_file_entry(anim_basename + ".brk").data = data
+  
+  for anim_basename in all_tex_anim_basenames:
+    anim_path = os.path.join(custom_player_folder, "#Texture animations", anim_basename + ".btk")
+    if os.path.isfile(anim_path):
+      with open(anim_path, "rb") as f:
+        data = BytesIO(f.read())
+        link_arc.get_file_entry(anim_basename + ".btk").data = data
   
   
   # Print out changed file sizes
