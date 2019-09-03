@@ -8,7 +8,8 @@ This is a set of helper scripts to make converting Wind Waker models back and fo
 First download and extract the helper scripts: https://github.com/LagoLunatic/ww_model_helpers/releases/latest
 
 Then you should download SuperBMD, which is the program that actually converts the models: https://github.com/LagoLunatic/SuperBMD/releases/latest  
-Extract the contents of the SuperBMD zip and put them in a folder named `SuperBMD` inside the WW Model Helpers folder - in other words, the SuperBMD folder must be next to extract_models.exe and pack_player.exe.
+Extract the contents of the SuperBMD zip and put them in a folder named `SuperBMD` inside the WW Model Helpers folder - in other words, the SuperBMD folder must be next to extract_models.exe and pack_player.exe.  
+You should also install the .NET Framework 4.6.1 if you don't already have it installed, as it is required for SuperBMD to run: https://www.microsoft.com/en-us/download/details.aspx?id=49981
 
 It's also recommended that you download J3D Model Viewer: https://github.com/LagoLunatic/J3D-Model-Viewer/releases/latest  
 This program allows you to view models in Wind Waker's model formats (BMD and BDL) the way they would actually appear in game. It can even load and preview animations. This makes it much faster to preview changes you make to a model than it would be to load up Wind Waker itself with the changed model.
