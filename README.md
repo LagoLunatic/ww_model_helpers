@@ -20,7 +20,7 @@ Note that you should use Blender 2.79. Blender 2.78 and earlier don't work - the
 ## Tutorial
 
 This basic tutorial will go over the process of converting Link's main model and a couple extras from Wind Waker's format (BDL) to a COLLADA .dae file (which can be modified in regular modeling programs such as Blender) and then back to Wind Waker's format (BDL) and getting the model ingame.  
-Currently this tutorial does not go over the process of actually modeling and rigging a custom model.
+This tutorial does not go over the process of actually modeling and rigging a custom model.
 
 ### Step 1: Set up workspace folders.  
 Create two folders - `Link Original` and `Custom Model`. The names of the folders don't matter, but one will be for holding Link's vanilla unmodified model, and the other will be for your custom player model.
@@ -59,7 +59,13 @@ In order to fix the normals, use Blender's text editor to open the script named 
 Another issue is that Blender is displaying the model without any textures. It's not strictly necessary, but if you want to see textures, first change Blender's view mode to Material. Then open the script named `make_materials_shadeless.py` that comes with the WW Model Helpers download, and click "Run Script".  
 If the model displays as completely white after doing this, your model might not have any textures imported with it. This can be caused by you moving the texture .png files after extracting them from the model but before importing the model into Blender - the .dae file stores the paths to the textures as absolute paths on your hard drive, so moving them will cause Blender to not be able to find them.
 
-### Step 5: Convert the model back to Wind Waker's format.  
+### Step 5: Create your custom model.  
+
+Once you have Link's vanilla model imported correctly, you can get to work starting to edit it to make your custom model.  
+This tutorial will not cover the process of making a model, only the process of using the scripts to convert between formats.  
+However, you can refer to [this other tutorial](https://docs.google.com/document/d/1AuI9OHi6Ni2HUzyBf_djT5wa1gzVmN2SG3jbROtrFKw) for extra information about swapping meshes and materials and rigging your custom model.
+
+### Step 6: Convert the model back to Wind Waker's format.  
 Open `cl.blend` and go to File -> Export -> Collada (.dae). Then choose to overwrite the file `Custom Model/cl/cl.dae`.
 
 Then run this command:  
@@ -74,7 +80,7 @@ Note: pack_player supports all of the models and textures in Link.arc, but a few
 Note: By default, pack_player will modify the texture of hands.bdl, but not the model itself. If you want to edit the shape of the hand poses in hands.bdl, you need to pass the -repackhands argument like so:  
 `pack_player.exe -link "path/to/Link Original" -custom "path/to/Custom Model" -repackhands`
 
-### Step 6: Preview the changed model in J3D Model Viewer (optional).
+### Step 7: Preview the changed model in J3D Model Viewer (optional).
 
 Before putting your new model in game, it's a good idea to load it up in J3D Model Viewer and make sure it looks right there. If it doesn't, you don't need to waste your time replacing the game's model and booting the game up.
 
@@ -88,7 +94,7 @@ First copy LkAnm.arc to a new folder somewhere else named `Link Animations` or w
 Then run `extract_models.exe "path/to/Link Animations/LkAnm.arc"`.  
 Then back in J3D Model Viewer, you can load an animation by going to File -> Load Animation, and selecting one of the .bck files in `Link Animations/#Bone animations`.
 
-### Step 7: Load the custom model in game.
+### Step 8: Load the custom model in game.
 
 The Link.arc created by pack_player is ready to be used by Wind Waker.  
 To have the randomizer load it, simply create a new folder inside the randomizer's `models` folder, and name the new folder what you want your custom model to be named. Then put your new Link.arc inside this new folder. When you boot up the randomizer, you can select your custom model from the dropdown list.
