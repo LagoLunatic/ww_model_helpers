@@ -15,7 +15,7 @@ It's also recommended that you download J3D Model Viewer: https://github.com/Lag
 This program allows you to view models in Wind Waker's model formats (BMD and BDL) the way they would actually appear in game. It can even load and preview animations. This makes it much faster to preview changes you make to a model than it would be to load up Wind Waker itself with the changed model.
 
 You will also need a 3D modeling program. I recommend Blender because it's free and is known to work for modifying Wind Waker models: https://www.blender.org/  
-Note that you should use Blender 2.79. Blender 2.78 and earlier don't work - they screw up the model's skeleton when importing or exporting the .dae file.
+Note that the only version of Blender that will work is 2.79. Blender 2.78 and earlier screw up the model's skeleton when importing or exporting the .dae file. Blender 2.80 is not yet supported.  
 
 ## Tutorial
 
