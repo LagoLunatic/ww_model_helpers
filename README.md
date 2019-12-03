@@ -101,7 +101,10 @@ To have the randomizer load it, simply create a new folder inside the randomizer
 
 Alternatively, if you want to use the model in the vanilla game, replace the file files/res/Object/Link.arc with the new Link.arc.
 
-If everything went well, the game should load up correctly with no crashes or visual errors.
+If everything went well, the game should load up correctly with no issues. If the game crashes after the Nintendo/Dolby logos but before the title screen, you may have made a mistake with creating the model somewhere.
+
+Note that if the filesize of Link.arc is larger than 1.44MB, the game might not have enough memory to run properly, which can result in crashes or visual errors during gameplay. The higher the filesize is over 1.44MB, the more frequently and more severe the issues will be.  
+As of version 1.6.1 of the randomizer, it will no longer allow you to use custom models with a Link.arc over that size. If your model is over that size, you will need to find a way to reduce its filesize, such as by reducing triangle count, lowering texture resolution, or changing texture format to one that takes fewer bits per pixel.
 
 ## Running the scripts from source
 
