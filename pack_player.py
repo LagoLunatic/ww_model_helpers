@@ -256,7 +256,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
         link_arc.get_file_entry(anim_basename + ".btk").data = data
   
   for anim_basename in all_btp_anim_basenames:
-    anim_path = os.path.join(custom_player_folder, "#Texture palette animations", anim_basename + ".btp")
+    anim_path = os.path.join(custom_player_folder, "#Texture swap animations", anim_basename + ".btp")
     if os.path.isfile(anim_path):
       with open(anim_path, "rb") as f:
         data = BytesIO(f.read())
