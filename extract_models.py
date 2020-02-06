@@ -35,7 +35,7 @@ def extract_all_models(rarc_path, filenames):
       extract_model_or_texture(file_entry, base_output_folder)
     if file_entry.name.endswith(".bti"):
       extract_model_or_texture(file_entry, base_output_folder)
-    if file_entry.name.endswith(".bck") or file_entry.name.endswith(".brk") or file_entry.name.endswith(".btk"):
+    if os.path.splitext(file_entry.name)[1] in [".bck", ".brk", ".btk", ".btp", ".bas", ".bpk"]:
       extract_animation(file_entry, base_output_folder)
 
 def extract_model_or_texture(file_entry, base_output_folder):
@@ -100,6 +100,12 @@ def extract_animation(file_entry, base_output_folder):
     animation_type_folder_name = "#TEV register animations"
   elif file_ext == ".btk":
     animation_type_folder_name = "#Texture animations"
+  elif file_ext == ".btp":
+    animation_type_folder_name = "#Texture swap animations"
+  elif file_ext == ".bas":
+    animation_type_folder_name = "#Sound effect animations"
+  elif file_ext == ".bpk":
+    animation_type_folder_name = "#Color animations"
   
   output_folder = os.path.join(base_output_folder, animation_type_folder_name)
   if not os.path.isdir(output_folder):
