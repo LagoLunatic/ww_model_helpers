@@ -214,6 +214,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     # Import texture BTI
     casual_tex_bti = os.path.join(custom_player_folder, texture_basename + ".bti")
     if os.path.isfile(casual_tex_bti):
+      found_any_files_to_modify = True
+      
       with open(casual_tex_bti, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(texture_basename + ".bti").data = data
@@ -237,6 +239,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   for anim_basename in all_bone_anim_basenames:
     anim_path = os.path.join(custom_player_folder, "#Bone animations", anim_basename + ".bck")
     if os.path.isfile(anim_path):
+      found_any_files_to_modify = True
+      
       with open(anim_path, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(anim_basename + ".bck").data = data
@@ -244,6 +248,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   for anim_basename in all_tev_anim_basenames:
     anim_path = os.path.join(custom_player_folder, "#TEV register animations", anim_basename + ".brk")
     if os.path.isfile(anim_path):
+      found_any_files_to_modify = True
+      
       with open(anim_path, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(anim_basename + ".brk").data = data
@@ -251,6 +257,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   for anim_basename in all_tex_anim_basenames:
     anim_path = os.path.join(custom_player_folder, "#Texture animations", anim_basename + ".btk")
     if os.path.isfile(anim_path):
+      found_any_files_to_modify = True
+      
       with open(anim_path, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(anim_basename + ".btk").data = data
@@ -258,6 +266,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   for anim_basename in all_btp_anim_basenames:
     anim_path = os.path.join(custom_player_folder, "#Texture swap animations", anim_basename + ".btp")
     if os.path.isfile(anim_path):
+      found_any_files_to_modify = True
+      
       with open(anim_path, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(anim_basename + ".btp").data = data
@@ -265,6 +275,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   for anim_basename in all_bas_anim_basenames:
     anim_path = os.path.join(custom_player_folder, "#Sound effect animations", anim_basename + ".bas")
     if os.path.isfile(anim_path):
+      found_any_files_to_modify = True
+      
       with open(anim_path, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(anim_basename + ".bas").data = data
@@ -272,6 +284,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   for anim_basename in all_bpk_anim_basenames:
     anim_path = os.path.join(custom_player_folder, "#Color animations", anim_basename + ".bpk")
     if os.path.isfile(anim_path):
+      found_any_files_to_modify = True
+      
       with open(anim_path, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(anim_basename + ".bpk").data = data
@@ -296,7 +310,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     f.write(link_arc.data.read())
   
   if not found_any_files_to_modify:
-    print("No models or textures to modify found. Repacked RARC with no changes.")
+    print("No models, textures, or animations to modify found. Repacked RARC with no changes.")
 
 if __name__ == "__main__":
   args_valid = False
