@@ -110,8 +110,8 @@ def copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy):
 
 
 
-def convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=False):
-  orig_link_arc_path = os.path.join(orig_link_folder, "Link.arc")
+def convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=False, rarc_name="Link.arc"):
+  orig_link_arc_path = os.path.join(orig_link_folder, rarc_name)
   with open(orig_link_arc_path, "rb") as f:
     rarc_data = BytesIO(f.read())
   link_arc = RARC(rarc_data)
@@ -290,28 +290,45 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     print("File %s, orig size %X, new size %X" % (file_entry.name, data_len(orig_file_entry.data), data_len(file_entry.data)))
   
   link_arc.save_changes()
-  link_arc_out_path = os.path.join(custom_player_folder, "Link.arc")
+  link_arc_out_path = os.path.join(custom_player_folder, rarc_name)
   with open(link_arc_out_path, "wb") as f:
     link_arc.data.seek(0)
     f.write(link_arc.data.read())
   
   if not found_any_files_to_modify:
-    print("No models or textures to modify found. Repacked Link.arc with no changes.")
+    print("No models or textures to modify found. Repacked RARC with no changes.")
 
 if __name__ == "__main__":
   args_valid = False
   repack_hands = False
-  if len(sys.argv) == 5 and sys.argv[1] == "-link" and sys.argv[3] == "-custom":
+  rarc_name = "Link.arc"
+  if len(sys.argv) >= 5 and sys.argv[1] in ["-link", "-clean"] and sys.argv[3] == "-custom":
     args_valid = True
-  elif len(sys.argv) == 6 and sys.argv[1] == "-link" and sys.argv[3] == "-custom" and sys.argv[5] == "-repackhands":
-    args_valid = True
+  
+  extra_args = sys.argv[5:]
+  
+  if "-repackhands" in extra_args:
     repack_hands = True
+    extra_args.remove("-repackhands")
+  
+  if "-rarcname" in extra_args:
+    rarcname_index = extra_args.index("-rarcname")
+    if rarcname_index+1 >= len(extra_args):
+      args_valid = False
+    else:
+      rarc_name = extra_args.pop(rarcname_index+1)
+      extra_args.remove("-rarcname")
+  
+  if extra_args:
+    # Invalid extra args
+    args_valid = False
   
   if not args_valid:
-    print("Invalid arguments. Proper format:")
-    print("  pack_player -link \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
-    print("Or, if you want to modify the hands.bdl model and not just its texture, include the -repackhands argument:")
-    print("  pack_player -link \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\" -repackhands")
+    print("The format for running pack_player is as follows:")
+    print("  pack_player -clean \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
+    print("Also, the following optional arguments can included at the end:")
+    print("  -repackhands    Use this if you want to modify the hands.bdl model and not just its texture.")
+    print("  -rarcname       Use this followed by the filename of the RARC if it is anything other than 'Link.arc'.")
     sys.exit(1)
   
   orig_link_folder = sys.argv[2]
@@ -330,7 +347,7 @@ if __name__ == "__main__":
     sys.exit(1)
   
   try:
-    convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=repack_hands)
+    convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=repack_hands, rarc_name=rarc_name)
   except ModelConversionError as e:
     print(e)
     sys.exit(1)
