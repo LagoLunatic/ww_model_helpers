@@ -23,6 +23,8 @@ def convert_to_bdl(base_folder, file_base_name, superbmd_folder="SuperBMD"):
   tex_headers_path = os.path.join(base_folder, "tex_headers.json")
   materials_path   = os.path.join(base_folder, "materials.json")
   
+  print("Converting %s to BDL" % in_dae_path)
+  
   # Check through the .dae file to see if there are any instances of <v/>, which would cause the "Invalid contents in element "n"" error when SuperBMD tries to read the file.
   with open(in_dae_path) as f:
     dae_contents = f.read()
@@ -35,8 +37,6 @@ def convert_to_bdl(base_folder, file_base_name, superbmd_folder="SuperBMD"):
   )
   if matches:
     raise ModelConversionError("Error: All of the vertices in the following meshes are unweighted: " + (", ".join(matches)))
-  
-  print("Converting %s to BDL" % in_dae_path)
   
   if os.path.isfile(out_bdl_path):
     os.remove(out_bdl_path)
