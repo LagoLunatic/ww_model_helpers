@@ -3,6 +3,21 @@
 
 This is a set of helper scripts to make converting Wind Waker models back and forth between formats easier - specifically for making custom player models to replace Link.
 
+## Table of contents
+
+* [Getting set up](#getting-set-up)
+* [Tutorial](#tutorial)
+  * [Step 1: Set up workspace folders](#step-2-extract-links-original-model)
+  * [Step 2: Extract Link's original model](#step-2-extract-links-original-model)
+  * [Step 3: Copy the files you want to edit](#step-3-copy-the-files-you-want-to-edit)
+  * [Step 4: Open the model](#step-4-open-the-model)
+  * [Step 4.5: Fix the imported model in Blender](#step-45-fix-the-imported-model-in-blender)
+  * [Step 5: Create your custom model](#step-5-create-your-custom-model)
+  * [Step 6: Convert the model back to Wind Waker's format](#step-6-convert-the-model-back-to-wind-wakers-format)
+  * [Step 7: Preview the changed model in J3D Model Viewer (optional)](#step-7-preview-the-changed-model-in-j3d-model-viewer-optional)
+  * [Step 8: Load the custom model in game](#step-8-load-the-custom-model-in-game)
+* [Running the scripts from source](#running-the-scripts-froms-source)
+
 ## Getting set up
 
 First download and extract the helper scripts: https://github.com/LagoLunatic/ww_model_helpers/releases/latest
