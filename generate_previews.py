@@ -9,6 +9,7 @@ import struct
 import tempfile
 import shutil
 import re
+from collections import OrderedDict
 
 context = bpy.context
 scene = context.scene
@@ -188,9 +189,12 @@ for tex_header in tex_headers:
         tex.extension = wrap_mode
 
 model_metadata = {}
+last_custom_colors_hash = None
 with open(model_metadata_path) as f:
   for line in f.readlines():
     match = re.search(r"^([^\s:]+): (.+)$", line)
+    colors_hash_start_match = re.search(r"^([^\s:]+):$", line)
+    color_match = re.search(r"^ +([^\s:]+): (.+)$", line)
     if match:
       key = match.group(1)
       val = match.group(2).strip()
@@ -198,7 +202,18 @@ with open(model_metadata_path) as f:
         val = True
       elif val.lower() == "false":
         val = False
+      
       model_metadata[key] = val
+    elif colors_hash_start_match:
+      key = colors_hash_start_match.group(1)
+      if key == "hero_custom_colors" or key == "casual_custom_colors":
+        in_custom_colors = True
+        model_metadata[key] = OrderedDict()
+        last_custom_colors_hash = model_metadata[key]
+    elif color_match and last_custom_colors_hash is not None:
+      key = color_match.group(1)
+      val = color_match.group(2).strip()
+      last_custom_colors_hash[key] = val
 
 # Increase z-index of the eye and eyebrow meshes (for the masks).
 for mat_name in ["m1eyeL", "m4eyeR", "m8mayuL", "m11mayuR"]:
@@ -235,6 +250,7 @@ for image in orig_images:
 # Create the pupil image.
 bpy.data.images.load(pupil_image_path)
 hitomi_image = bpy.data.images["hitomi.png"]
+hitomi_width, hitomi_height = hitomi_image.size
 hitomi_pixels = hitomi_image.pixels[:] # Convert the image's pixels to a tuple to increase performance when reading from it
 
 orig_linktexS3TC_path = bpy.data.images["linktexS3TC.png"].filepath
@@ -251,13 +267,10 @@ for prefix in ["hero", "casual"]:
   eyebrow_color_name = model_metadata.get(prefix + "_eyebrow_color_name", "Hair")
   casual_hair_color_name = model_metadata.get("casual_hair_color_name", "Hair")
   
-  for color_mask_file_path in color_mask_file_paths:
-    file_basename = os.path.splitext(os.path.basename(color_mask_file_path))[0]
-    assert file_basename.startswith(prefix + "_")
-    curr_color_name = file_basename[len(prefix + "_"):]
-    
+  for curr_color_name, curr_color_value in model_metadata.get(prefix + "_custom_colors").items():
     textures_to_mask = []
     textures_to_not_mask = []
+    textures_to_not_mask.append("linktexS3TC.png") # Will be masked later
     if has_colored_eyebrows and curr_color_name == eyebrow_color_name:
       textures_to_mask.append("mayuh.1.png")
     else:
@@ -271,6 +284,7 @@ for prefix in ["hero", "casual"]:
     else:
       textures_to_not_mask.append("mouthS3TC.1.png")
     if curr_color_name == hitomi_color_name:
+      replaced_any_pupils_for_this_color = True
       textures_to_mask.append("eyeh.1.png")
     else:
       textures_to_not_mask.append("eyeh.1.png")
@@ -281,6 +295,7 @@ for prefix in ["hero", "casual"]:
       tex_image = bpy.data.images[texture_name]
       tex_pixels = tex_image.pixels[:] # Convert the image's pixels to a tuple to increase performance when reading from it
       new_pixels = [] # Instead of modifying the image's pixels every loop, make a new list of pixels we edit for better performance
+      tex_width, tex_height = tex_image.size
       for i in range(len(mask_image.pixels)//4):
         orig_alpha = tex_pixels[i*4+3]
         r = 1.0
@@ -296,9 +311,19 @@ for prefix in ["hero", "casual"]:
             orig_r = tex_pixels[i*4+0]
             orig_g = tex_pixels[i*4+1]
             orig_b = tex_pixels[i*4+2]
-            hitomi_r = hitomi_pixels[i*4+0] # hitomi should be the same resolution as eyeh.1 so the same index will work
-            hitomi_g = hitomi_pixels[i*4+1]
-            hitomi_b = hitomi_pixels[i*4+2]
+            
+            # eyeh.1 and hitomi might not be the same resolution, so we need to map the index in eyeh.1 to the index in hitomi.
+            tex_x = i % tex_width
+            tex_y = i // tex_width
+            x = tex_x / tex_width
+            y = tex_y / tex_height
+            hitomi_x = int(x * hitomi_width)
+            hitomi_y = int(y * hitomi_height)
+            hitomi_i = (hitomi_y*hitomi_width) + hitomi_x
+            
+            hitomi_r = hitomi_pixels[hitomi_i*4+0]
+            hitomi_g = hitomi_pixels[hitomi_i*4+1]
+            hitomi_b = hitomi_pixels[hitomi_i*4+2]
             eye_is_not_white = (orig_r <= 0.5 and orig_g <= 0.5 and orig_b <= 0.5)
             hitomi_is_white = (hitomi_r > 0.5 and hitomi_g > 0.5 and hitomi_r > 0.5)
             if eye_is_not_white or hitomi_is_white:
@@ -339,14 +364,22 @@ for prefix in ["hero", "casual"]:
         new_pixels += [r, g, b, orig_alpha]
       mask_image.pixels[:] = new_pixels # Now update the image's actual pixels just once with our pixel list
     
-    # Apply the masks to the main link body texture.
-    color_mask_path = os.path.join(color_masks_dir, "%s_%s.png" % (prefix, curr_color_name))
-    load_mask_texture("linktexS3TC.png", color_mask_path)
-    
     # Apply the masks to the eyes.
     color_mask_path = os.path.join(color_masks_dir, "hitomi_%s_%s.png" % (prefix, curr_color_name))
     if os.path.isfile(color_mask_path):
+      replaced_any_pupils_for_this_color = True
       load_mask_texture("eyeh.1.png", color_mask_path)
+    
+    # Apply the masks to the main link body texture.
+    color_mask_path = os.path.join(color_masks_dir, "%s_%s.png" % (prefix, curr_color_name))
+    if os.path.isfile(color_mask_path):
+      load_mask_texture("linktexS3TC.png", color_mask_path)
+    else:
+      if replaced_any_pupils_for_this_color:
+        # No mask for the main body texture is allowed if this is a color for pupils. Leave the main body texture white.
+        pass
+      else:
+        raise Exception("Failed to find color mask: %s_%s.png" % (prefix, curr_color_name))
     
     # Apply the masks to the mouth.
     color_mask_path = os.path.join(color_masks_dir, "mouths", "mouthS3TC.1_%s.png" % (curr_color_name))
