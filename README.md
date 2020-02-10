@@ -16,6 +16,7 @@ This is a set of helper scripts to make converting Wind Waker models back and fo
   * [Step 6: Convert the model back to Wind Waker's format](#step-6-convert-the-model-back-to-wind-wakers-format)
   * [Step 7: Preview the changed model in J3D Model Viewer (optional)](#step-7-preview-the-changed-model-in-j3d-model-viewer-optional)
   * [Step 8: Load the custom model in game](#step-8-load-the-custom-model-in-game)
+  * [Step 9: Set up custom colors (optional)](#step-9-set-up-custom-colors-optional)
 * [Running the scripts from source](#running-the-scripts-from-source)
 
 ## Getting set up
@@ -120,6 +121,10 @@ If everything went well, the game should load up correctly with no issues. If th
 
 Note that if the filesize of Link.arc is larger than 1.44MB, the game might not have enough memory to run properly, which can result in crashes or visual errors during gameplay. The higher the filesize is over 1.44MB, the more frequently and more severe the issues will be.  
 As of version 1.6.1 of the randomizer, it will no longer allow you to use custom models with a Link.arc over that size. If your model is over that size, you will need to find a way to reduce its filesize, such as by reducing triangle count, lowering texture resolution, or changing texture format to one that takes fewer bits per pixel.
+
+### Step 9: Set up custom colors (optional)
+
+If you want to set up colors that can be customized by the player in Wind Waker Randomizer's UI, refer to [this guide](https://github.com/LagoLunatic/ww_model_helpers/blob/master/custom_colors_README.md).
 
 ## Running the scripts from source
 
