@@ -30,8 +30,8 @@ CustomModelFolder/color_masks/hero_Color Name.png
 CustomModelFolder/color_masks/casual_Color Name.png
 ```
 All color options must have a mask for linktexS3TC like this. The only exception is colors that recolor the pupils (see below) - you can still include linktexS3TC masks for pupil colors if you want, but this is not required since you normally wouldn't want linktexS3TC to change with the pupil color.  
-
-
+  
+  
 For the player's eyebrow images (mayuh), they are not colorized by default. You can enable this like so:  
 ```
 has_colored_eyebrows: true
@@ -42,15 +42,15 @@ hero_eyebrow_color_name: Color Name
 casual_eyebrow_color_name: Color Name
 ```
 (These default to "Hair" if not specified.)  
-
-
+  
+  
 For the player's casual hair model (katsura), you can specify the color like so:
 ```
 casual_hair_color_name: Color Name
 ```
 (This defaults to "Hair" if not specified.)  
-
-
+  
+  
 For the hands.bdl model that contains extra hand poses for the player, you can specify the color like so:  
 ```
 hero_hands_color_name: Color Name
@@ -63,8 +63,8 @@ CustomModelFolder/color_masks/hands_hero_Color Name.png
 CustomModelFolder/color_masks/hands_casual_Color Name.png
 ```
 (If any hands masks are present, the "hands_color_name" fields above are ignored.)  
-
-
+  
+  
 For the player's pupil image (hitomi), you can specify the color like so:
 ```
 hero_hitomi_color_name: Color Name
@@ -77,8 +77,8 @@ CustomModelFolder/color_masks/hitomi_hero_Color Name.png
 CustomModelFolder/color_masks/hitomi_casual_Color Name.png
 ```
 (If any hitomi masks are present, the "hitomi_color_name" fields above are ignored.)  
-
-
+  
+  
 For the player's mouth images (mouthS3TC), you can specify the color like so:
 ```
 hero_mouth_color_name: Color Name
