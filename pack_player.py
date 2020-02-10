@@ -315,7 +315,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
 if __name__ == "__main__":
   args_valid = False
   repack_hands = False
-  rarc_name = "Link.arc"
+  rarc_name = None
   if len(sys.argv) >= 5 and sys.argv[1] in ["-link", "-clean"] and sys.argv[3] == "-custom":
     args_valid = True
   
@@ -339,10 +339,10 @@ if __name__ == "__main__":
   
   if not args_valid:
     print("The format for running pack_player is as follows:")
-    print("  pack_player -clean \"Path/To/Clean/Link/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
+    print("  pack_player -clean \"Path/To/Clean/Model/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
     print("Also, the following optional arguments can included at the end:")
     print("  -repackhands    Use this if you want to modify the hands.bdl model and not just its texture.")
-    print("  -rarcname       Use this followed by the filename of the RARC if it is anything other than 'Link.arc'.")
+    print("  -rarcname       Use this followed by the filename of the RARC if you want to manually specify what RARC name to look for (e.g. 'Link.arc'). Only needs to be specified if there are multiple .arc files in the clean folder.")
     sys.exit(1)
   
   orig_link_folder = sys.argv[2]
@@ -359,6 +359,21 @@ if __name__ == "__main__":
   if not os.path.isfile(superbmd_path):
     print("SuperBMD not found. SuperBMD.exe must be located in the SuperBMD folder.")
     sys.exit(1)
+  
+  if rarc_name is None:
+    found_rarcs = []
+    for filename in os.listdir(orig_link_folder):
+      file_path = os.path.join(orig_link_folder, filename)
+      if os.path.isfile(file_path) and os.path.splitext(filename)[1] == ".arc":
+        found_rarcs.append(filename)
+    if len(found_rarcs) == 1:
+      rarc_name = found_rarcs[0]
+    elif len(found_rarcs) > 1:
+      print("Multiple .arc files found in the clean folder. You must specify which one to use with -rarcname.")
+      sys.exit(1)
+    else:
+      print("No .arc files found in the clean folder.")
+      sys.exit(1)
   
   try:
     convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=repack_hands, rarc_name=rarc_name)
