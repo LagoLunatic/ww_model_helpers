@@ -16,7 +16,7 @@ This is a set of helper scripts to make converting Wind Waker models back and fo
   * [Step 6: Convert the model back to Wind Waker's format](#step-6-convert-the-model-back-to-wind-wakers-format)
   * [Step 7: Preview the changed model in J3D Model Viewer (optional)](#step-7-preview-the-changed-model-in-j3d-model-viewer-optional)
   * [Step 8: Load the custom model in game](#step-8-load-the-custom-model-in-game)
-* [Running the scripts from source](#running-the-scripts-froms-source)
+* [Running the scripts from source](#running-the-scripts-from-source)
 
 ## Getting set up
 
