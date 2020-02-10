@@ -232,6 +232,11 @@ for image in orig_images:
       if tex.image == image:
         tex.image = mask_image
 
+# Create the pupil image.
+bpy.data.images.load(pupil_image_path)
+hitomi_image = bpy.data.images["hitomi.png"]
+hitomi_pixels = hitomi_image.pixels[:] # Convert the image's pixels to a tuple to increase performance when reading from it
+
 orig_linktexS3TC_path = bpy.data.images["linktexS3TC.png"].filepath
 
 for prefix in ["hero", "casual"]:
@@ -242,6 +247,7 @@ for prefix in ["hero", "casual"]:
   has_colored_eyebrows = model_metadata.get("has_colored_eyebrows", False)
   hands_color_name = model_metadata.get(prefix + "_hands_color_name", "Skin")
   mouth_color_name = model_metadata.get(prefix + "_mouth_color_name", "Skin")
+  hitomi_color_name = model_metadata.get(prefix + "_hitomi_color_name", "Eyes")
   eyebrow_color_name = model_metadata.get(prefix + "_eyebrow_color_name", "Hair")
   casual_hair_color_name = model_metadata.get("casual_hair_color_name", "Hair")
   
@@ -264,7 +270,10 @@ for prefix in ["hero", "casual"]:
       textures_to_mask.append("mouthS3TC.1.png")
     else:
       textures_to_not_mask.append("mouthS3TC.1.png")
-    textures_to_not_mask.append("eyeh.1.png")
+    if curr_color_name == hitomi_color_name:
+      textures_to_mask.append("eyeh.1.png")
+    else:
+      textures_to_not_mask.append("eyeh.1.png")
     
     # Change the textures to be completely red or white, but also preserve the original alpha channel from the texture (not the mask).
     for texture_name in textures_to_mask + textures_to_not_mask:
@@ -274,10 +283,29 @@ for prefix in ["hero", "casual"]:
       new_pixels = [] # Instead of modifying the image's pixels every loop, make a new list of pixels we edit for better performance
       for i in range(len(mask_image.pixels)//4):
         orig_alpha = tex_pixels[i*4+3]
+        r = 1.0
+        g = 1.0
+        b = 1.0
+        
         if texture_name in textures_to_mask:
-          new_pixels += [1.0, 0.0, 0.0, orig_alpha]
-        else:
-          new_pixels += [1.0, 1.0, 1.0, orig_alpha]
+          g = 0.0
+          b = 0.0
+          
+          if texture_name == "eyeh.1.png":
+            # We only want to mask the parts of the eye where the pupil and eye whites overlap.
+            orig_r = tex_pixels[i*4+0]
+            orig_g = tex_pixels[i*4+1]
+            orig_b = tex_pixels[i*4+2]
+            hitomi_r = hitomi_pixels[i*4+0] # hitomi should be the same resolution as eyeh.1 so the same index will work
+            hitomi_g = hitomi_pixels[i*4+1]
+            hitomi_b = hitomi_pixels[i*4+2]
+            eye_is_not_white = (orig_r <= 0.5 and orig_g <= 0.5 and orig_b <= 0.5)
+            hitomi_is_white = (hitomi_r > 0.5 and hitomi_g > 0.5 and hitomi_r > 0.5)
+            if eye_is_not_white or hitomi_is_white:
+              g = 1.0
+              b = 1.0
+        
+        new_pixels += [r, g, b, orig_alpha]
       mask_image.pixels[:] = new_pixels # Now update the image's actual pixels just once with our pixel list
     
     if prefix == "casual":
@@ -285,20 +313,47 @@ for prefix in ["hero", "casual"]:
     else:
       bpy.data.images["linktexS3TC.png"].filepath = orig_linktexS3TC_path
     
-    bpy.data.images["linktexS3TC.png_mask"].filepath = os.path.join(color_masks_dir, "%s_%s.png" % (prefix, curr_color_name))
-    mask_image = bpy.data.images["linktexS3TC.png_mask"]
-    mask_pixels = mask_image.pixels[:]
-    tex_image = bpy.data.images["linktexS3TC.png"]
-    tex_pixels = tex_image.pixels[:]
-    new_pixels = []
-    for i in range(len(mask_image.pixels)//4):
-      orig_alpha = tex_pixels[i*4+3]
-      r = mask_pixels[i*4]
-      g = mask_pixels[i*4+1]
-      b = mask_pixels[i*4+2]
-      new_pixels += [r, g, b, orig_alpha]
-    mask_image.pixels[:] = new_pixels # Now update the image's actual pixels just once with our pixel list
+    def load_mask_texture(texture_name, color_mask_path):
+      bpy.data.images[texture_name + "_mask"].filepath = color_mask_path
+      mask_image = bpy.data.images[texture_name + "_mask"]
+      mask_pixels = mask_image.pixels[:]
+      tex_image = bpy.data.images[texture_name]
+      tex_pixels = tex_image.pixels[:]
+      new_pixels = []
+      for i in range(len(mask_image.pixels)//4):
+        orig_alpha = tex_pixels[i*4+3]
+        r = mask_pixels[i*4]
+        g = mask_pixels[i*4+1]
+        b = mask_pixels[i*4+2]
+        
+        if texture_name == "eyeh.1.png":
+          # For the pupil mask, we don't want any parts of the pupil that extend outside of the whites of the eyes to be masked for the preview.
+          orig_r = tex_pixels[i*4+0]
+          orig_g = tex_pixels[i*4+1]
+          orig_b = tex_pixels[i*4+2]
+          if orig_r <= 0.5 and orig_g <= 0.5 and orig_b <= 0.5:
+            r = 1.0
+            g = 1.0
+            b = 1.0
+        
+        new_pixels += [r, g, b, orig_alpha]
+      mask_image.pixels[:] = new_pixels # Now update the image's actual pixels just once with our pixel list
     
+    # Apply the masks to the main link body texture.
+    color_mask_path = os.path.join(color_masks_dir, "%s_%s.png" % (prefix, curr_color_name))
+    load_mask_texture("linktexS3TC.png", color_mask_path)
+    
+    # Apply the masks to the eyes.
+    color_mask_path = os.path.join(color_masks_dir, "hitomi_%s_%s.png" % (prefix, curr_color_name))
+    if os.path.isfile(color_mask_path):
+      load_mask_texture("eyeh.1.png", color_mask_path)
+    
+    # Apply the masks to the mouth.
+    color_mask_path = os.path.join(color_masks_dir, "mouths", "mouthS3TC.1_%s.png" % (curr_color_name))
+    if os.path.isfile(color_mask_path):
+      load_mask_texture("mouthS3TC.1.png", color_mask_path)
+    
+    # Render the preview mask.
     scene.render.filepath = os.path.join(preview_dir, "preview_%s_%s.png" % (prefix, curr_color_name))
     bpy.ops.render.render(write_still=True)
     
@@ -343,9 +398,6 @@ for lamp_i in range(2):
   lamp.layers = [layer_i == lamp_i for layer_i in range(len(lamp.layers))]
   if lamp_i == 1:
     lamp.hide = True # Hide the second lamp from the viewport.
-
-# Create the pupil image.
-bpy.data.images.load(pupil_image_path)
 
 # Create the Cycles materials for all objects.
 done_mat_names = []
