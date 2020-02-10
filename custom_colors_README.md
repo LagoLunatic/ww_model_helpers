@@ -1,4 +1,10 @@
 
+### Table of contents
+
+* [Custom colors](#custom-colors)
+* [Color masks](#color-masks)
+* [Extra metadata.txt options](#extra-metadatatxt-options)
+
 ### Custom colors
 
 If you want your model to have custom colors the player can change in the randomizer's UI, you must include a file called metadata.txt in the same folder as Link.arc.  
