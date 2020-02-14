@@ -61,7 +61,7 @@ You can find a full list of what all models and textures inside Link.arc are in 
 
 ### Step 4: Open the model.  
 Now you can open Link's model in a 3D modeling program. This tutorial will assume you use Blender, but other modeling programs probably work too.  
-Open Blender, delete all default objects in the scene, and go to File -> Import -> Collada (.dae).
+Open Blender, delete all default objects in the scene, and go to File -> Import -> Collada (.dae).  
 **Important note: If using Blender 2.8, you must check the checkbox saying "Keep Bind Info" under import settings.** If you don't check this, the model will look like it imports correctly, but will have a screwed up skeleton ingame later when you export it, so be careful to remember to select this every time you import. (This option isn't necessary in Blender 2.79.)  
 Then choose the file `Custom Model/cl/cl.dae`. Now you have Link's model open.  
 You could modify it now if you want, but for the sake of this tutorial just leave it alone for now.
