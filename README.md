@@ -31,7 +31,7 @@ It's also recommended that you download J3D Model Viewer: https://github.com/Lag
 This program allows you to view models in Wind Waker's model formats (BMD and BDL) the way they would actually appear in game. It can even load and preview animations. This makes it much faster to preview changes you make to a model than it would be to load up Wind Waker itself with the changed model.
 
 You will also need a 3D modeling program. I recommend Blender because it's free and is known to work for modifying Wind Waker models: https://www.blender.org/  
-Note that the only version of Blender that will work is 2.79. Blender 2.78 and earlier screw up the model's skeleton when importing or exporting the .dae file. Blender 2.80 is not yet supported.  
+Note that you must use at least version 2.79. Blender 2.78 and earlier screw up the model's skeleton when importing or exporting the .dae file. Blender 2.8 and higher work, though the steps you have to do are slightly different from 2.79.  
 
 ## Tutorial
 
@@ -61,7 +61,9 @@ You can find a full list of what all models and textures inside Link.arc are in 
 
 ### Step 4: Open the model.  
 Now you can open Link's model in a 3D modeling program. This tutorial will assume you use Blender, but other modeling programs probably work too.  
-Open Blender, delete all default objects in the scene, and go to File -> Import -> Collada (.dae). Then choose the file `Custom Model/cl/cl.dae`. Now you have Link's model open.  
+Open Blender, delete all default objects in the scene, and go to File -> Import -> Collada (.dae).
+**Important note: If using Blender 2.8, you must check the checkbox saying "Keep Bind Info" under import settings.** If you don't check this, the model will look like it imports correctly, but will have a screwed up skeleton ingame later when you export it, so be careful to remember to select this every time you import. (This option isn't necessary in Blender 2.79.)  
+Then choose the file `Custom Model/cl/cl.dae`. Now you have Link's model open.  
 You could modify it now if you want, but for the sake of this tutorial just leave it alone for now.
 
 Note that the process of importing and exporting .dae files is lossy, so if you do it too many times the model will get completely screwed up. Therefore, you should only import each model's .dae one time, and then save it as a .blend (or whatever the equivalent is if you're not using Blender).  
@@ -72,7 +74,8 @@ So after importing `cl.dae`, you should go to Save As and save `cl.blend` right 
 Now that you have the model in Blender, you might notice that the shading on parts of the model looks wrong. For example, around Link's mouth. This is because Blender's .dae importer currently does not import custom normals from the .dae file.  
 In order to fix the normals, use Blender's text editor to open the script named `fix_normals.py` that comes with the WW Model Helpers download. Click "Run Script", and it should automatically fix the shading on Link's mouth and such.
 
-Another issue is that Blender is displaying the model without any textures. It's not strictly necessary, but if you want to see textures, first change Blender's view mode to Material. Then open the script named `make_materials_shadeless.py` that comes with the WW Model Helpers download, and click "Run Script".  
+Another issue is that Blender is displaying the model without any textures. It's not strictly necessary, but if you want to see textures in Blender 2.79, first change the view mode to Material. Then open the script named `make_materials_shadeless.py` that comes with the WW Model Helpers download, and click "Run Script".  
+In Blender 2.8, you don't need to run `make_materials_shadeless.py`. Simply change the shading mode to "Material Preview".  
 If the model displays as completely white after doing this, your model might not have any textures imported with it. This can be caused by you moving the texture .png files after extracting them from the model but before importing the model into Blender - the .dae file stores the paths to the textures as absolute paths on your hard drive, so moving them will cause Blender to not be able to find them.
 
 ### Step 5: Create your custom model.  
@@ -82,7 +85,9 @@ This tutorial will not cover the process of making a model, only the process of 
 However, you can refer to [this other tutorial](https://docs.google.com/document/d/1AuI9OHi6Ni2HUzyBf_djT5wa1gzVmN2SG3jbROtrFKw) for extra information about swapping meshes and materials and rigging your custom model.
 
 ### Step 6: Convert the model back to Wind Waker's format.  
-Open `cl.blend` and go to File -> Export -> Collada (.dae). Then choose to overwrite the file `Custom Model/cl/cl.dae`.
+Open `cl.blend` and go to File -> Export -> Collada (.dae).  
+Note: If using Blender 2.8, you must change the option that says "Y Forward" to "Z Forward" and the option that says "Z Up" to "-Y Up". If you don't do this, the model will be rotated ingame. (Not necessary in Blender 2.79.)  
+Then choose to overwrite the file `Custom Model/cl/cl.dae`.
 
 Then run this command:  
 `pack_player.exe -link "path/to/Link Original" -custom "path/to/Custom Model"`
