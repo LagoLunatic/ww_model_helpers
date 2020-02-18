@@ -271,6 +271,7 @@ for prefix in ["hero", "casual"]:
     textures_to_mask = []
     textures_to_not_mask = []
     textures_to_not_mask.append("linktexS3TC.png") # Will be masked later
+    replaced_any_pupils_for_this_color = False
     if has_colored_eyebrows and curr_color_name == eyebrow_color_name:
       textures_to_mask.append("mayuh.1.png")
     else:
