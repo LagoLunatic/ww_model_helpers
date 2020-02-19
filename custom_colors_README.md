@@ -22,6 +22,23 @@ The hex color after the color name is what the "base" color for that option is. 
 If the area recolored for a given color option is all a solid color, the base color should simply be that color.  
 If the area includes multiple colors you can pick the one that covers the largest amount of the area. The colors you didn't choose might recolor slightly strangely - in this case you can try tweaking the base color or splitting the option into two different color options.  
 
+### Color presets
+
+You can also optionally create color presets that allow the player to select color combinations you choose manually out of a dropdown list in the randomizer's UI:  
+```
+hero_color_presets:
+  A Preset Name:
+    Color name: 2427C7
+    A different color name: 52EBC7
+  Another Preset Name:
+    A different color name: DBEB52
+casual_color_presets:
+  A Casual Preset Name:
+    Yet another color name: 361D8A
+```
+The above creates two presets named "A Preset Name" and "Another Preset Name" for the hero's clothes outfit, and a preset named "A Casual Preset Name" for the casual clothes outfit.  
+Note that a preset does not need to specify colors that should be left at the default, base color. In the example above, "Another Preset Name" does not specify a value for "Color name", meaning it will use the default value (98C722, which was specified in hero_custom_colors in the first example).  
+
 ### Color masks
 
 Basic color masks for the main linktexS3TC texture should be placed like so (assuming "Color Name" is the name of one of your custom colors):  
