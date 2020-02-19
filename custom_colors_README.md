@@ -2,6 +2,7 @@
 ### Table of contents
 
 * [Custom colors](#custom-colors)
+* [Color presets](#color-presets)
 * [Color masks](#color-masks)
 * [Extra metadata.txt options](#extra-metadatatxt-options)
 
