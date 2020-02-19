@@ -192,9 +192,9 @@ model_metadata = {}
 last_custom_colors_hash = None
 with open(model_metadata_path) as f:
   for line in f.readlines():
-    match = re.search(r"^([^\s:]+): (.+)$", line)
-    colors_hash_start_match = re.search(r"^([^\s:]+):$", line)
-    color_match = re.search(r"^ +([^\s:]+): (.+)$", line)
+    match = re.search(r"^(\S[^\n\r:]*): (.+)$", line)
+    colors_hash_start_match = re.search(r"^(\S[^\n\r:]*):$", line)
+    color_match = re.search(r"^ +(\S[^\n\r:]*): (.+)$", line)
     if match:
       key = match.group(1)
       val = match.group(2).strip()
@@ -208,8 +208,10 @@ with open(model_metadata_path) as f:
       key = colors_hash_start_match.group(1)
       if key == "hero_custom_colors" or key == "casual_custom_colors":
         in_custom_colors = True
-        model_metadata[key] = OrderedDict()
-        last_custom_colors_hash = model_metadata[key]
+      else:
+        in_custom_colors = False
+      model_metadata[key] = OrderedDict()
+      last_custom_colors_hash = model_metadata[key]
     elif color_match and last_custom_colors_hash is not None:
       key = color_match.group(1)
       val = color_match.group(2).strip()
