@@ -2,7 +2,7 @@
 
 block_cipher = None
 
-a = Analysis(['extract_models.py'],
+a = Analysis(['unpack_models.py'],
              pathex=["./wwrando"],
              binaries=[],
              datas=[],
@@ -20,7 +20,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='extract_models',
+          name='unpack_models',
           debug=False,
           strip=False,
           upx=True,

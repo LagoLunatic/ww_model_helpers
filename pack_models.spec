@@ -2,7 +2,7 @@
 
 block_cipher = None
 
-a = Analysis(['pack_player.py'],
+a = Analysis(['pack_models.py'],
              pathex=["./wwrando"],
              binaries=[],
              datas=[],
@@ -20,7 +20,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='pack_player',
+          name='pack_models',
           debug=False,
           strip=False,
           upx=True,

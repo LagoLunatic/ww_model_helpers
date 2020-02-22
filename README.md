@@ -24,7 +24,7 @@ This is a set of helper scripts to make converting Wind Waker models back and fo
 First download and extract the helper scripts: https://github.com/LagoLunatic/ww_model_helpers/releases/latest
 
 Then you should download SuperBMD, which is the program that actually converts the models: https://github.com/LagoLunatic/SuperBMD/releases/latest  
-Extract the contents of the SuperBMD zip and put them in a folder named `SuperBMD` inside the WW Model Helpers folder - in other words, the SuperBMD folder must be next to extract_models.exe and pack_player.exe.  
+Extract the contents of the SuperBMD zip and put them in a folder named `SuperBMD` inside the WW Model Helpers folder - in other words, the SuperBMD folder must be next to unpack_models.exe and pack_models.exe.  
 You should also install the .NET Framework 4.6.1 if you don't already have it installed, as it is required for SuperBMD to run: https://www.microsoft.com/en-us/download/details.aspx?id=49981
 
 It's also recommended that you download J3D Model Viewer: https://github.com/LagoLunatic/J3D-Model-Viewer/releases/latest  
@@ -48,7 +48,7 @@ Once all files have finished extracting, find the file `files/res/Object/Link.ar
 Copy Link.arc to your `Link Original` folder.
 
 Then run the following command:  
-`extract_models.exe "path/to/Link Original/Link.arc"`  
+`unpack_models.exe "path/to/Link Original/Link.arc"`  
 That will extract all of the models and textures that are inside the Link.arc archive.  
 If everything worked correctly, your `Link Original` folder should now have 57 subfolders (54 which have a model in them and 3 which have animations in them), 3 PNG images, 3 .bti files of the same name as the images (these are the images before being decoded), and it should also still have Link.arc in it.
 
@@ -90,34 +90,34 @@ Note: If using Blender 2.8, you must change the option that says "Y Forward" to 
 Then choose to overwrite the file `Custom Model/cl/cl.dae`.
 
 Then run this command:  
-`pack_player.exe -link "path/to/Link Original" -custom "path/to/Custom Model"`
+`pack_models.exe -clean "path/to/Link Original" -custom "path/to/Custom Model"`
 
-What pack_player does is automate converting the .dae models in all the folders of your `Custom Model` folder to .bdl models which can be used by the game itself.  
+What pack_models does is automate converting the .dae models in all the folders of your `Custom Model` folder to .bdl models which can be used by the game itself.  
 It also converts any .png images back to .bti images that the game can use.  
 Then, it packs all of Link's models and textures into a new Link.arc, which is located in your `Custom Model` folder.
 
-Note: pack_player supports all of the models and textures in Link.arc, but a few of the models cannot be properly repacked by SuperBMD currently. Refer to link_models_and_textures.txt for a list of what all the models and textures are and any technical limitations on specific models.  
+Note: pack_models supports all of the models and textures in Link.arc, but a few of the models cannot be properly repacked by SuperBMD currently. Refer to link_models_and_textures.txt for a list of what all the models and textures are and any technical limitations on specific models.  
 
-Note: By default, pack_player will modify the texture of hands.bdl, but not the model itself. If you want to edit the shape of the hand poses in hands.bdl, you need to pass the -repackhands argument like so:  
-`pack_player.exe -link "path/to/Link Original" -custom "path/to/Custom Model" -repackhands`
+Note: By default, pack_models will modify the texture of hands.bdl, but not the model itself. If you want to edit the shape of the hand poses in hands.bdl, you need to pass the -repackhands argument like so:  
+`pack_models.exe -clean "path/to/Link Original" -custom "path/to/Custom Model" -repackhands`
 
 ### Step 7: Preview the changed model in J3D Model Viewer (optional).
 
 Before putting your new model in game, it's a good idea to load it up in J3D Model Viewer and make sure it looks right there. If it doesn't, you don't need to waste your time replacing the game's model and booting the game up.
 
-Simply open J3D Model Viewer, and then open your `Custom Model/cl/cl.bdl` model that was created by pack_player.  
+Simply open J3D Model Viewer, and then open your `Custom Model/cl/cl.bdl` model that was created by pack_models.  
 In the viewer, hold down the right mouse button and press the WASDQE keys to move the camera around. Scroll the mouse wheel to change movement speed.
 
 Next, you might want to try loading an animation. But first you need to find where Link's animations are stored.  
 You might notice three folders in your `Link Original` folder named `#Bone animations`, `#TEV register animations`, and `#Texture animations`. These contain the animations that were in Link.arc, but those aren't animations for Link's main body, but for miscellaneous models in Link.arc.  
 Link's main body's animations are stored in the archive `files/res/Object/LkAnm.arc`. To get the animations out of it, repeat the same process you used to extract Link.arc.  
 First copy LkAnm.arc to a new folder somewhere else named `Link Animations` or whatever you want.  
-Then run `extract_models.exe "path/to/Link Animations/LkAnm.arc"`.  
+Then run `unpack_models.exe "path/to/Link Animations/LkAnm.arc"`.  
 Then back in J3D Model Viewer, you can load an animation by going to File -> Load Animation, and selecting one of the .bck files in `Link Animations/#Bone animations`.
 
 ### Step 8: Load the custom model in game.
 
-The Link.arc created by pack_player is ready to be used by Wind Waker.  
+The Link.arc created by pack_models is ready to be used by Wind Waker.  
 To have the randomizer load it, simply create a new folder inside the randomizer's `models` folder, and name the new folder what you want your custom model to be named. Then put your new Link.arc inside this new folder. When you boot up the randomizer, you can select your custom model from the dropdown list.
 
 Alternatively, if you want to use the model in the vanilla game, replace the file files/res/Object/Link.arc with the new Link.arc.
@@ -143,5 +143,5 @@ Download and install Python 3.6.6 from here: https://www.python.org/downloads/re
 Then run `cd ww_model_helpers`, followed by `py -3.6 -m pip install -r wwrando/requirements.txt` to install dependencies.  
 
 Finally, you can run the scripts with these commands:  
-`py -3.6 extract_models.py`  
-`py -3.6 pack_player.py`  
+`py -3.6 unpack_models.py`  
+`py -3.6 pack_models.py`  

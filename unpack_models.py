@@ -119,9 +119,9 @@ def extract_animation(file_entry, base_output_folder):
 if __name__ == "__main__":
   if len(sys.argv) < 2:
     print("Invalid arguments. Proper format:")
-    print("  extract_models \"Path/To/Archive.arc\"")
+    print("  unpack_models \"Path/To/Archive.arc\"")
     print("  Or, to only extract specific files:")
-    print("  extract_models \"Path/To/Archive.arc\" [filename1] [filename2] [...]")
+    print("  unpack_models \"Path/To/Archive.arc\" [filename1] [filename2] [...]")
     sys.exit(1)
   
   rarc_path = sys.argv[1]

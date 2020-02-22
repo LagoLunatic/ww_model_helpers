@@ -342,8 +342,8 @@ if __name__ == "__main__":
     args_valid = False
   
   if not args_valid:
-    print("The format for running pack_player is as follows:")
-    print("  pack_player -clean \"Path/To/Clean/Model/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
+    print("The format for running pack_models is as follows:")
+    print("  pack_models -clean \"Path/To/Clean/Model/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
     print("Also, the following optional arguments can included at the end:")
     print("  -repackhands    Use this if you want to modify the hands.bdl model and not just its texture.")
     print("  -rarcname       Use this followed by the filename of the RARC if you want to manually specify what RARC name to look for (e.g. 'Link.arc'). Only needs to be specified if there are multiple .arc files in the clean folder.")

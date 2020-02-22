@@ -17,16 +17,16 @@ base_zip_name += bits_number
 
 zip_name = base_zip_name.replace(" ", "_") + ".zip"
 
-extract_models_exe_path = "./dist/extract_models.exe"
-if not os.path.isfile(extract_models_exe_path):
+unpack_models_exe_path = "./dist/unpack_models.exe"
+if not os.path.isfile(unpack_models_exe_path):
   raise Exception("Executable not found: %s" % exe_path)
-pack_player_exe_path = "./dist/pack_player.exe"
-if not os.path.isfile(pack_player_exe_path):
+pack_models_exe_path = "./dist/pack_models.exe"
+if not os.path.isfile(pack_models_exe_path):
   raise Exception("Executable not found: %s" % exe_path)
 
 with ZipFile("./dist/" + zip_name, "w") as zip:
-  zip.write(extract_models_exe_path, arcname="extract_models.exe")
-  zip.write(pack_player_exe_path, arcname="pack_player.exe")
+  zip.write(unpack_models_exe_path, arcname="unpack_models.exe")
+  zip.write(pack_models_exe_path, arcname="pack_models.exe")
   
   zip.write("README.md")
   zip.write("generate_previews_README.md")
