@@ -155,6 +155,9 @@ scene.render.resolution_percentage = 100
 # Make the background transparent.
 scene.render.film_transparent = True
 
+# Necessary to fix the colors looking very washed out (applies to both the post-binarization version of the masks as well as the final Cycles renders).
+scene.view_settings.view_transform = "Standard"
+
 # Masks need to be binary, they won't work properly if they have antialiasing.
 scene.render.filter_size = 0.01
 
@@ -394,10 +397,10 @@ for prefix in ["hero", "casual"]:
     else:
       textures_to_not_mask.append("eyeh.1.png")
     
-    print(curr_color_name)
-    print(textures_to_mask)
-    print(textures_to_not_mask)
-    print()
+    #print(curr_color_name)
+    #print(textures_to_mask)
+    #print(textures_to_not_mask)
+    #print()
     
     # Change the textures to be completely red or white, but also preserve the original alpha channel from the texture (not the mask).
     for texture_name in textures_to_mask + textures_to_not_mask:
@@ -524,7 +527,6 @@ scene.render.engine = "CYCLES"
 world.light_settings.use_ambient_occlusion = True
 world.light_settings.ao_factor = 0.3
 scene.cycles.filter_width = 0.01 # Effectively disables antialiasing where meshes meet
-scene.view_settings.view_transform = "Standard" # Necessary to fix the colors looking very washed out
 
 # Create the Cycles materials for all objects.
 done_mat_names = []
