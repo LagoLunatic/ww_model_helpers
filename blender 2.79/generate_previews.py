@@ -176,6 +176,7 @@ for material in bpy.data.materials:
 with open(tex_headers_path) as f:
   tex_headers = json.load(f)
 tex_wrap_mode_for_image_name = {}
+tex_min_filter_for_image_name = {}
 for tex_header in tex_headers:
   tex_image_name = tex_header["Name"] + ".png"
   if tex_header["WrapS"] == "ClampToEdge":
@@ -183,6 +184,12 @@ for tex_header in tex_headers:
   else:
     wrap_mode = "REPEAT"
   tex_wrap_mode_for_image_name[tex_image_name] = wrap_mode
+  
+  if tex_header["MinFilter"] == "Nearest":
+    tex_min_filter_for_image_name[tex_image_name] = "Closest"
+  else:
+    tex_min_filter_for_image_name[tex_image_name] = "Linear"
+  
   for tex in bpy.data.textures:
     if isinstance(tex, bpy.types.ImageTexture):
       if tex.image.name == tex_image_name:
@@ -469,6 +476,10 @@ for obj in scene.objects:
     image_node = nodes.new("ShaderNodeTexImage")
     image_node.image = bpy.data.images[tex_name]
     image_nodes.append(image_node)
+    
+    # Set the texture interpolation for the material from the tex_headers.json.
+    if tex_name in tex_min_filter_for_image_name:
+      image_node.interpolation = tex_min_filter_for_image_name[tex_name]
     
     toon_node = nodes.new("ShaderNodeBsdfToon")
     toon_node.location = (400, 400)
