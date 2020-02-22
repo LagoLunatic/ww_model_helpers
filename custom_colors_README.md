@@ -134,3 +134,8 @@ If you want to change the text that appears next to the "Casual Clothes" checkbo
 ```
 casual_clothes_option_text: Your custom text here
 ```
+
+If you want to the ship's sail to be completely invisible (for if your custom ship model shouldn't have a sail on it):
+```
+hide_ship_sail: true
+```
