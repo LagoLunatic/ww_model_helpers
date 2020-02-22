@@ -39,6 +39,7 @@ with ZipFile("./dist/" + zip_name, "w") as zip:
   zip.write("blender 2.79/add_casual_hair.py")
   zip.write("blender 2.79/enable_texture_alpha.py")
   zip.write("blender 2.79/remove_doubles.py")
+  zip.write("blender 2.79/set_texture_wrap_and_filter.py")
   
   zip.write("blender 2.8/fix_normals.py")
   zip.write("blender 2.8/generate_previews.py")
