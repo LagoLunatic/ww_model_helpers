@@ -29,7 +29,7 @@ fanb
   No known issues or limitations.
 fansmall
   Deku Leaf (version held in your hand when idle)
-  No known issues or limitations.
+  Make sure that both of the meshes remain weighted to 2 or more bones. Which specific bones they are can be changed. But reducing the number of bones one of the meshes is weighted to down to only 1 will cause the game to crash when the player takes the small Deku Leaf out.
 hammer
   Skull Hammer
   No known issues or limitations.
