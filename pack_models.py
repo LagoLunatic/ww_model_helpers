@@ -204,7 +204,12 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
         if "LodBias" in tex_header:
           texture.lod_bias = tex_header["LodBias"]
         if "unknown2" in tex_header:
-          texture.unknown_2 = tex_header["unknown2"]
+          texture.min_lod = (tex_header["unknown2"] & 0xFF00) >> 8
+          texture.max_lod = (tex_header["unknown2"] & 0x00FF)
+        if "MinLOD" in tex_header:
+          texture.min_lod = tex_header["MinLOD"]
+        if "MaxLOD" in tex_header:
+          texture.max_lod = tex_header["MaxLOD"]
         if "unknown3" in tex_header:
           texture.unknown_3 = tex_header["unknown3"]
       
