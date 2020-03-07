@@ -35,7 +35,7 @@ bpy.context.scene.objects.active = joined_mesh
 # Remove duplicate vertices from the joined mesh.
 bm = bmesh.new()
 bm.from_mesh(joined_mesh.data)
-bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0001)
+bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.001)
 bm.to_mesh(joined_mesh.data)
 joined_mesh.data.update()
 bm.clear()
