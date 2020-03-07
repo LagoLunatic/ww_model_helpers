@@ -232,7 +232,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   if not repack_hands_model:
     # Import hands texture
     hands_tex_png = os.path.join(custom_player_folder, "hands", "handsS3TC.png")
-    if os.path.isfile(hands_tex_png):
+    if os.path.isfile(hands_tex_png) and link_arc.get_file("hands.bdl") is not None:
       found_any_files_to_modify = True
       
       image = Image.open(hands_tex_png)
