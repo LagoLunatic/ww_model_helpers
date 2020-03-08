@@ -13,6 +13,7 @@ from fs_helpers import *
 from wwlib.rarc import RARC
 from wwlib.texture_utils import *
 from wwlib.bti import *
+from wwlib.j3d import ColorAnimation, AnimationTrack, AnimationKeyframe, LoopMode, TangentType
 
 class ModelConversionError(Exception):
   pass
@@ -173,13 +174,15 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   
   for texture_basename in all_texture_basenames:
     # Create texture BTI from PNG
-    casual_tex_png = os.path.join(custom_player_folder, texture_basename + ".png")
-    if os.path.isfile(casual_tex_png):
+    texture_bti_path = os.path.join(custom_player_folder, texture_basename + ".bti")
+    texture_png_path = os.path.join(custom_player_folder, texture_basename + ".png")
+    
+    if os.path.isfile(texture_png_path):
       found_any_files_to_modify = True
       
       print("Converting %s from PNG to BTI" % texture_basename)
       
-      image = Image.open(casual_tex_png)
+      image = Image.open(texture_png_path)
       texture = link_arc.get_file(texture_basename + ".bti")
       
       tex_header_json_path = os.path.join(custom_player_folder, texture_basename + "_tex_header.json")
@@ -215,17 +218,15 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
       
       texture.replace_image(image)
       texture.save_changes()
-      casual_tex_bti = os.path.join(custom_player_folder, texture_basename + ".bti")
-      with open(casual_tex_bti, "wb") as f:
+      with open(texture_bti_path, "wb") as f:
         texture.file_entry.data.seek(0)
         f.write(texture.file_entry.data.read())
     
     # Import texture BTI
-    casual_tex_bti = os.path.join(custom_player_folder, texture_basename + ".bti")
-    if os.path.isfile(casual_tex_bti):
+    if os.path.isfile(texture_bti_path):
       found_any_files_to_modify = True
       
-      with open(casual_tex_bti, "rb") as f:
+      with open(texture_bti_path, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(texture_basename + ".bti").data = data
   
@@ -255,11 +256,25 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
         link_arc.get_file_entry(anim_basename + ".bck").data = data
       
   for anim_basename in all_tev_anim_basenames:
-    anim_path = os.path.join(custom_player_folder, "#TEV register animations", anim_basename + ".brk")
-    if os.path.isfile(anim_path):
+    anim_brk_path = os.path.join(custom_player_folder, "#TEV register animations", anim_basename + ".brk")
+    anim_json_path = os.path.join(custom_player_folder, "#TEV register animations", anim_basename + ".json")
+    
+    if os.path.isfile(anim_json_path):
       found_any_files_to_modify = True
       
-      with open(anim_path, "rb") as f:
+      print("Converting %s from JSON to BRK" % anim_basename)
+      
+      brk = link_arc.get_file(anim_basename + ".brk")
+      load_brk_from_json(brk, anim_json_path)
+      
+      brk.save_changes()
+      with open(anim_brk_path, "wb") as f:
+        f.write(read_all_bytes(brk.file_entry.data))
+    
+    if os.path.isfile(anim_brk_path):
+      found_any_files_to_modify = True
+      
+      with open(anim_brk_path, "rb") as f:
         data = BytesIO(f.read())
         link_arc.get_file_entry(anim_basename + ".brk").data = data
   
@@ -320,6 +335,46 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   
   if not found_any_files_to_modify:
     print("No models, textures, or animations to modify found. Repacked RARC with no changes.")
+
+def load_brk_from_json(brk, input_json_path):
+  trk1 = brk.trk1
+  
+  with open(input_json_path) as f:
+    json_dict = json.load(f)
+  
+  trk1.loop_mode = LoopMode[json_dict["LoopMode"]]
+  trk1.duration = json_dict["Duration"]
+  reg_anims_json = json_dict["RegisterAnimations"]
+  konst_anims_json = json_dict["KonstantAnimations"]
+  trk1.mat_name_to_reg_anims.clear()
+  trk1.mat_name_to_konst_anims.clear()
+  
+  for anims_json, anims_dict in [(reg_anims_json, trk1.mat_name_to_reg_anims), (konst_anims_json, trk1.mat_name_to_konst_anims)]:
+    for mat_name, mat_anims_json in anims_json.items():
+      if mat_name in anims_dict:
+        raise Exception("Duplicate material name in BRK: \"%s\"" % mat_name)
+      
+      anims_dict[mat_name] = []
+      for anim_json in mat_anims_json:
+        anim = ColorAnimation()
+        anim.color_id = anim_json["ColorID"]
+        anims_dict[mat_name].append(anim)
+        
+        for channel in ["R", "G", "B", "A"]:
+          track_json = anim_json[channel]
+          
+          anim_track = AnimationTrack()
+          setattr(anim, channel.lower(), anim_track)
+          anim_track.tangent_type = TangentType[track_json["TangentType"]]
+          
+          anim_track.keyframes = []
+          for keyframe_json in track_json["KeyFrames"]:
+            time = keyframe_json["Time"]
+            value = keyframe_json["Value"]
+            tangent_in = keyframe_json["TangentIn"]
+            tangent_out = keyframe_json["TangentOut"]
+            keyframe = AnimationKeyframe(time, value, tangent_in, tangent_out)
+            anim_track.keyframes.append(keyframe)
 
 if __name__ == "__main__":
   args_valid = False

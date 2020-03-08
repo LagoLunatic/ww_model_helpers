@@ -9,6 +9,7 @@ import json
 sys.path.insert(0, "./wwrando")
 from wwlib.rarc import RARC
 from wwlib.bti import BTIFileEntry
+from wwlib.j3d import BRK
 
 def extract_all_models(rarc_path, filenames):
   with open(rarc_path, "rb") as f:
@@ -116,6 +117,49 @@ def extract_animation(file_entry, base_output_folder):
   with open(output_file_name, "wb") as f:
     file_entry.data.seek(0)
     f.write(file_entry.data.read())
+  
+  if file_ext == ".brk":
+    output_json_name = os.path.join(output_folder, file_basename + ".json")
+    dump_brk_to_json(file_entry, output_json_name)
+
+def dump_brk_to_json(file_entry, output_json_name):
+  brk = BRK(file_entry)
+  trk1 = brk.trk1
+  
+  json_dict = OrderedDict()
+  json_dict["LoopMode"] = trk1.loop_mode.name
+  json_dict["Duration"] = trk1.duration
+  reg_anims_json = OrderedDict()
+  konst_anims_json = OrderedDict()
+  json_dict["RegisterAnimations"] = reg_anims_json
+  json_dict["KonstantAnimations"] = konst_anims_json
+  
+  for anims_json, anims_dict in [(reg_anims_json, trk1.mat_name_to_reg_anims), (konst_anims_json, trk1.mat_name_to_konst_anims)]:
+    for mat_name, anims in anims_dict.items():
+      anims_json[mat_name] = []
+      for anim in anims:
+        anim_json = OrderedDict()
+        anims_json[mat_name].append(anim_json)
+        anim_json["ColorID"] = anim.color_id
+        
+        for channel in ["R", "G", "B", "A"]:
+          anim_track = getattr(anim, channel.lower())
+          
+          track_json = OrderedDict()
+          anim_json[channel] = track_json
+          track_json["TangentType"] = anim_track.tangent_type.name
+          track_json["KeyFrames"] = []
+          
+          for keyframe in anim_track.keyframes:
+            keyframe_json = OrderedDict()
+            track_json["KeyFrames"].append(keyframe_json)
+            keyframe_json["Time"] = keyframe.time
+            keyframe_json["Value"] = keyframe.value
+            keyframe_json["TangentIn"] = keyframe.tangent_in
+            keyframe_json["TangentOut"] = keyframe.tangent_out
+  
+  with open(output_json_name, "w") as f:
+    json.dump(json_dict, f, indent=2)
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
