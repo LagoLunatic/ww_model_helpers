@@ -7,6 +7,7 @@ from collections import OrderedDict
 from PIL import Image
 import re
 import json
+import glob
 
 sys.path.insert(0, "./wwrando")
 from fs_helpers import *
@@ -111,7 +112,7 @@ def copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy):
 
 
 
-def convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=False, rarc_name="Link.arc"):
+def convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=False, rarc_name="Link.arc", no_skip_unchanged=False):
   orig_link_arc_path = os.path.join(orig_link_folder, rarc_name)
   with open(orig_link_arc_path, "rb") as f:
     rarc_data = BytesIO(f.read())
@@ -156,9 +157,31 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     
     new_model_folder = os.path.join(custom_player_folder, model_basename)
     if os.path.isdir(new_model_folder):
+      out_bdl_path = os.path.join(new_model_folder, model_basename + ".bdl")
+      
       found_any_files_to_modify = True
       
-      out_bdl_path = convert_to_bdl(new_model_folder, model_basename)
+      should_rebuild_bdl = False
+      if os.path.isfile(out_bdl_path) and not no_skip_unchanged:
+        last_compile_time = os.path.getmtime(out_bdl_path)
+        
+        relevant_file_exts = ["dae", "png", "json"]
+        for file_ext in relevant_file_exts:
+          relevant_file_paths = glob.glob(new_model_folder + "/*." + file_ext)
+          for relevant_file_path in relevant_file_paths:
+            if os.path.getmtime(relevant_file_path) > last_compile_time:
+              should_rebuild_bdl = True
+              break
+          if should_rebuild_bdl:
+            break
+      else:
+        should_rebuild_bdl = True
+      
+      if should_rebuild_bdl:
+        convert_to_bdl(new_model_folder, model_basename)
+      else:
+        print("Skipping %s" % model_basename)
+      
       orig_bdl_path = os.path.join(orig_link_folder, model_basename, model_basename + ".bdl")
       
       sections_to_copy = []
@@ -380,6 +403,7 @@ if __name__ == "__main__":
   args_valid = False
   repack_hands = False
   rarc_name = None
+  no_skip_unchanged = False
   if len(sys.argv) >= 5 and sys.argv[1] in ["-link", "-clean"] and sys.argv[3] == "-custom":
     args_valid = True
   
@@ -397,6 +421,10 @@ if __name__ == "__main__":
       rarc_name = extra_args.pop(rarcname_index+1)
       extra_args.remove("-rarcname")
   
+  if "-noskipunchanged" in extra_args:
+    no_skip_unchanged = True
+    extra_args.remove("-noskipunchanged")
+  
   if extra_args:
     # Invalid extra args
     args_valid = False
@@ -405,8 +433,9 @@ if __name__ == "__main__":
     print("The format for running pack_models is as follows:")
     print("  pack_models -clean \"Path/To/Clean/Model/Folder\" -custom \"Path/To/Custom/Model/Folder\"")
     print("Also, the following optional arguments can included at the end:")
-    print("  -repackhands    Use this if you want to modify the hands.bdl model and not just its texture.")
-    print("  -rarcname       Use this followed by the filename of the RARC if you want to manually specify what RARC name to look for (e.g. 'Link.arc'). Only needs to be specified if there are multiple .arc files in the clean folder.")
+    print("   -repackhands       Use this if you want to modify the hands.bdl model and not just its texture.")
+    print("   -rarcname          Use this followed by the filename of the RARC if you want to manually specify what RARC name to look for (e.g. 'Link.arc'). Only needs to be specified if there are multiple .arc files in the clean folder.")
+    print("   -noskipunchanged   Use this if you want to recompile all models, even unchanged ones. Without this option specified, models that haven't been changed since they were last compiled will simply have their most recent compiled version packed, in order to save time.")
     sys.exit(1)
   
   orig_link_folder = sys.argv[2]
@@ -440,7 +469,10 @@ if __name__ == "__main__":
       sys.exit(1)
   
   try:
-    convert_all_player_models(orig_link_folder, custom_player_folder, repack_hands_model=repack_hands, rarc_name=rarc_name)
+    convert_all_player_models(
+      orig_link_folder, custom_player_folder,
+      repack_hands_model=repack_hands, rarc_name=rarc_name, no_skip_unchanged=no_skip_unchanged
+    )
   except ModelConversionError as e:
     print(e)
     sys.exit(1)
