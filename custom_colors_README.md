@@ -13,10 +13,10 @@ If you want your model to have custom colors the player can change in the random
 You can specify what colors there are to change by putting data such as this in your metadata.txt:  
 ```
 hero_custom_colors:
-  Color name: 98C722
-  A different color name: 4642C7
+  Color name: 0x98C722
+  A different color name: 0x4642C7
 casual_custom_colors:
-  Yet another color name: C76418
+  Yet another color name: 0xC76418
 ```
 
 The hex color after the color name is what the "base" color for that option is. This is something the randomizer uses when calculating how to recolor the image.  
@@ -29,13 +29,13 @@ You can also optionally create color presets that allow the player to select col
 ```
 hero_color_presets:
   A Preset Name:
-    Color name: 2427C7
-    A different color name: 52EBC7
+    Color name: 0x2427C7
+    A different color name: 0x52EBC7
   Another Preset Name:
-    A different color name: DBEB52
+    A different color name: 0xDBEB52
 casual_color_presets:
   A Casual Preset Name:
-    Yet another color name: 361D8A
+    Yet another color name: 0x361D8A
 ```
 The above creates two presets named "A Preset Name" and "Another Preset Name" for the hero's clothes outfit, and a preset named "A Casual Preset Name" for the casual clothes outfit.  
 Note that a preset does not need to specify colors that should be left at the default, base color. In the example above, "Another Preset Name" does not specify a value for "Color name", meaning it will use the default value (98C722, which was specified in hero_custom_colors in the first example).  
