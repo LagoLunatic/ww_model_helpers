@@ -6,7 +6,9 @@ from subprocess import call
 from collections import OrderedDict
 import json
 
-sys.path.insert(0, "./wwrando")
+from model_helpers_paths import WWRANDO_PATH, SUPERBMD_PATH
+
+sys.path.insert(0, WWRANDO_PATH)
 from wwlib.rarc import RARC
 from wwlib.bti import BTIFileEntry
 from wwlib.j3d import BRK
@@ -80,9 +82,8 @@ def extract_model_or_texture(file_entry, base_output_folder):
     with open(output_json_name, "w") as f:
       json.dump(header, f, indent=2)
   else:
-    superbmd_folder = "SuperBMD"
     command = [
-      os.path.join(superbmd_folder, "SuperBMD.exe"),
+      SUPERBMD_PATH,
       "-i", output_file_name,
     ]
     
@@ -176,8 +177,7 @@ if __name__ == "__main__":
   
   filenames = sys.argv[2:]
   
-  superbmd_path = os.path.join("SuperBMD", "SuperBMD.exe")
-  if not os.path.isfile(superbmd_path):
+  if not os.path.isfile(SUPERBMD_PATH):
     print("SuperBMD not found. SuperBMD.exe must be located in the SuperBMD folder.")
     sys.exit(1)
   

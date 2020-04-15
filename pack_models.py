@@ -9,7 +9,9 @@ import re
 import json
 import glob
 
-sys.path.insert(0, "./wwrando")
+from model_helpers_paths import WWRANDO_PATH, SUPERBMD_PATH
+
+sys.path.insert(0, WWRANDO_PATH)
 from fs_helpers import *
 from wwlib.rarc import RARC
 from wwlib.texture_utils import *
@@ -19,7 +21,7 @@ from wwlib.j3d import ColorAnimation, AnimationTrack, AnimationKeyframe, LoopMod
 class ModelConversionError(Exception):
   pass
 
-def convert_to_bdl(base_folder, file_base_name, superbmd_folder="SuperBMD"):
+def convert_to_bdl(base_folder, file_base_name):
   in_dae_path      = os.path.join(base_folder, file_base_name + ".dae")
   out_bdl_path     = os.path.join(base_folder, file_base_name + ".bdl")
   tex_headers_path = os.path.join(base_folder, "tex_headers.json")
@@ -44,7 +46,7 @@ def convert_to_bdl(base_folder, file_base_name, superbmd_folder="SuperBMD"):
     os.remove(out_bdl_path)
   
   command = [
-    os.path.join(superbmd_folder, "SuperBMD.exe"),
+    SUPERBMD_PATH,
     "-i", in_dae_path,
     "-o", out_bdl_path,
     "-x", tex_headers_path,
@@ -448,8 +450,7 @@ if __name__ == "__main__":
     print("Custom player folder does not exist: %s" % custom_player_folder)
     sys.exit(1)
   
-  superbmd_path = os.path.join("SuperBMD", "SuperBMD.exe")
-  if not os.path.isfile(superbmd_path):
+  if not os.path.isfile(SUPERBMD_PATH):
     print("SuperBMD not found. SuperBMD.exe must be located in the SuperBMD folder.")
     sys.exit(1)
   
