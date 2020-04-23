@@ -21,8 +21,7 @@ cl
   No known issues or limitations.
 fan
   Deku Leaf (version used when blowing a gust of wind)
-  No known issues or limitations.
-  Just be careful not to remove duplicate vertices from the leaf - its two sides are perfectly overlapping but have opposite normals, so removing duplicates would screw it up and merge the two sides into one.
+  Be careful not to remove duplicate vertices from the leaf - its two sides are perfectly overlapping but have opposite normals, so removing duplicates would screw it up and merge the two sides into one.
   Also make sure that mesh-1 is weighted to at least 2 bones. If it is weighted to only 1 bone, then mesh-0 will not be hidden when the player runs out of MP like it's supposed to be.
 fanb
   Deku Leaf (version used when gliding)
@@ -68,7 +67,7 @@ tceiver
   No known issues or limitations.
 tetolach
   Pirate's Charm
-  No known issues or limitations.
+  Make sure that both of the meshes remain weighted to 2 or more bones. Which specific bones they are can be changed. But reducing the number of bones one of the meshes is weighted to down to only 1 will cause the game to crash when the player takes the Pirate's Charm out.
 yamu
   Hero's Charm
   No known issues or limitations.
@@ -131,7 +130,7 @@ gwp00
   ??? Some kind of rod inside another rod
 shms
   Mirror Shield
-  No known issues or limitations.
+  It's recommended that you change the weighting so that all vertices are weighted to every single bone. If you do that it removes the subtle effect of the shield bending when hit, but if you don't this model tends to have tons of issues ingame.
 suimen_munya
   White circle on the water's surface around Link when he's swimming
   No known issues or limitations.
