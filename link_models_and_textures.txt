@@ -127,7 +127,7 @@ gicer01
   No known issues or limitations.
   Note: Trying to open this model in J3D Model Viewer will crash.
 gwp00
-  ??? Some kind of rod inside another rod
+  Pillar of water that forms when a cannon's bomb hits the water's surface (not only the player's cannon, but enemy ones as well)
 shms
   Mirror Shield
   It's recommended that you change the weighting so that all vertices are weighted to every single bone. If you do that it removes the subtle effect of the shield bending when hit, but if you don't this model tends to have tons of issues ingame.
@@ -147,7 +147,7 @@ yaura00
   Aura coming up off the Magic Armor.
   Does NOT work - just becomes a single flat plane sticking out the front of the player's chest.
 ybafo00
-  ??? Looks like a circular disk thing?
+  Gust of wind blown by the Deku Leaf hitting against a wall
 yhsls00
   The glow around the Hero's Sword after drinking the Elixir Soup.
   No known issues or limitations.
@@ -161,12 +161,12 @@ ymsls00
   Mirror Shield Light Ray
   No known issues or limitations.
 yuchw00
-  ??? Looks kinda like a sideways hat on another sideways hat?
+  Gust of wind blown by the Deku Leaf
 
 ### Textures
 
 blur
-  ??? A gradient from black to white
+  The afterimage texture that follows behind the boomerang.
 linktexbci4
   Casual clothes texture
   No known issues or limitations.
