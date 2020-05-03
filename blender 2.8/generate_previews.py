@@ -108,6 +108,10 @@ bpy.ops.object.mode_set(mode="OBJECT")
 orig_tex_names_for_objs = {}
 for obj in scene.objects:
   if obj.data.__class__ == bpy.types.Mesh:
+    if not obj.data.materials[0].use_nodes:
+      raise Exception("Mesh object %s is not set to use nodes for its material. Check if its texture imported correctly." % obj.name)
+    if "Image Texture" not in obj.data.materials[0].node_tree.nodes:
+      raise Exception("Mesh object %s does not have an image texture properly loaded." % obj.name)
     orig_tex_names_for_objs[obj] = obj.data.materials[0].node_tree.nodes["Image Texture"].image.name
 
 def update_objects_hidden_in_render(prefix):
