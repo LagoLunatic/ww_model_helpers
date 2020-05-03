@@ -94,7 +94,7 @@ garwg00
   No known issues or limitations.
 arrow
   Arrow
-  No known issues or limitations.
+  Changing which bones each mesh is weighted to may cause crashes.
 arrowglitter
   Light Arrow
   No known issues or limitations.
