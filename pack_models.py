@@ -407,7 +407,7 @@ if __name__ == "__main__":
   repack_hands = False
   rarc_name = None
   no_skip_unchanged = False
-  if len(sys.argv) >= 5 and sys.argv[1] in ["-link", "-clean"] and sys.argv[3] == "-custom":
+  if len(sys.argv) >= 5 and sys.argv[1] == "-clean" and sys.argv[3] == "-custom":
     args_valid = True
   
   extra_args = sys.argv[5:]
