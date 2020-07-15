@@ -119,7 +119,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   orig_link_arc_path = os.path.join(orig_link_folder, rarc_name)
   with open(orig_link_arc_path, "rb") as f:
     rarc_data = BytesIO(f.read())
-  link_arc = RARC(rarc_data)
+  link_arc = RARC()
+  link_arc.read(rarc_data)
   
   
   all_model_basenames = []
@@ -344,7 +345,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   # Print out changed file sizes
   with open(orig_link_arc_path, "rb") as f:
     rarc_data = BytesIO(f.read())
-  orig_link_arc = RARC(rarc_data)
+  orig_link_arc = RARC()
+  orig_link_arc.read(rarc_data)
   for file_entry in link_arc.file_entries:
     orig_file_entry = orig_link_arc.get_file_entry(file_entry.name)
     if file_entry.is_dir:

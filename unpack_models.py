@@ -17,7 +17,8 @@ from wwlib.j3d import BRK
 def extract_all_models(rarc_path, filenames):
   with open(rarc_path, "rb") as f:
     data = BytesIO(f.read())
-  rarc = RARC(data)
+  rarc = RARC()
+  rarc.read(data)
   
   rarc_basename = os.path.splitext(os.path.basename(rarc_path))[0]
   rarc_containing_folder = os.path.dirname(rarc_path)
