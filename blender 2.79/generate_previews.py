@@ -465,10 +465,8 @@ for obj in scene.objects:
     for node in mat.node_tree.nodes:
       if node.__class__ == bpy.types.ShaderNodeBsdfDiffuse:
         bsdf_node = node
-        break
       elif node.__class__ == bpy.types.ShaderNodeOutputMaterial:
         output_node = node
-        break
     if bsdf_node:
       nodes.remove(bsdf_node)
     output_node.location = (800, 400)
