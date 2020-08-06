@@ -153,6 +153,7 @@ yhsls00
   No known issues or limitations.
 ymgcs00
   Magic Armor (the main shell around the player)
+  Note that this model is NOT also the bubble of water around the player during the final cutscene, despite the similar shape.
   No known issues or limitations.
 ymsli00
   The glow around the full power Master Sword, as well as around all forms of the Master Sword after drinking the Elixir Soup.
