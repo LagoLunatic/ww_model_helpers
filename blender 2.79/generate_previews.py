@@ -276,6 +276,9 @@ for prefix in ["hero", "casual"]:
   eyebrow_color_name = model_metadata.get(prefix + "_eyebrow_color_name", "Hair")
   casual_hair_color_name = model_metadata.get("casual_hair_color_name", "Hair")
   
+  if model_metadata.get(prefix + "_custom_colors") is None:
+    continue
+  
   for curr_color_name, curr_color_value in model_metadata.get(prefix + "_custom_colors").items():
     textures_to_mask = []
     textures_to_not_mask = []
