@@ -167,7 +167,7 @@ yuchw00
 ### Textures
 
 blur
-  The afterimage texture that follows behind the boomerang.
+  The afterimage texture that follows behind sword swipes as well as the boomerang.
 linktexbci4
   Casual clothes texture
   No known issues or limitations.
