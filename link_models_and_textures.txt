@@ -168,6 +168,7 @@ yuchw00
 
 blur
   The afterimage texture that follows behind sword swipes as well as the boomerang.
+  Note that you should not try to change this texture's resolution or any of its tex header properties such as the image format, since they are all hardcoded into the game engine. You can only edit the pixels of the image itself.
 linktexbci4
   Casual clothes texture
   No known issues or limitations.
