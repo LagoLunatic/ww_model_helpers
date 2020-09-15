@@ -36,7 +36,9 @@ Note that you must use at least version 2.79. Blender 2.78 and earlier screw up 
 ## Tutorial
 
 This basic tutorial will go over the process of converting Link's main model and a couple extras from Wind Waker's format (BDL) to a COLLADA .dae file (which can be modified in regular modeling programs such as Blender) and then back to Wind Waker's format (BDL) and getting the model ingame.  
-This tutorial does not go over the process of actually modeling and rigging a custom model.
+This tutorial does not go over the process of actually modeling and rigging a custom model.  
+
+If you have trouble following along with the first few steps of this text tutorial, you may optionally also want to watch [this video tutorial](https://www.youtube.com/watch?v=hitbHVIhnP4) which shows you how to get things set up.  
 
 ### Step 1: Set up workspace folders.  
 Create two folders - `Link Original` and `Custom Model`. The names of the folders don't matter, but one will be for holding Link's vanilla unmodified model, and the other will be for your custom player model.
