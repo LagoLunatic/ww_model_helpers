@@ -47,10 +47,12 @@ To get Link's original model, you must first extract all the files from your Win
 Once all files have finished extracting, find the file `files/res/Object/Link.arc`. This is an archive file containing all of Link's models and textures, including the items he holds.  
 Copy Link.arc to your `Link Original` folder.
 
-Then open the command prompt (type `cmd` into Windows Explorer's address bar) and run the following command:  
+Then go to the helper scripts folder (the folder with `unpack_models.exe` in it).  
+From that folder, open the command prompt by typing `cmd` into Windows Explorer's address bar, and run the following command:  
 `unpack_models.exe "path/to/Link Original/Link.arc"`  
+Note that you wouldn't actually write `path/to/Link Original/Link.arc`, instead you should drag and drop the actual Link.arc file onto the command prompt, and the correct path will be filled in there for you.  
 That will extract all of the models and textures that are inside the Link.arc archive.  
-If everything worked correctly, your `Link Original` folder should now have 57 subfolders (54 which have a model in them and 3 which have animations in them), 3 PNG images, 3 .bti files of the same name as the images (these are the images before being decoded), and it should also still have Link.arc in it.
+If everything worked correctly, your `Link Original` folder should now have 57 subfolders (54 which have a model in them and 3 which have animations in them), 3 PNG images, 3 .bti files of the same name as the images (these are the images before being decoded), and it should also still have Link.arc in it.  
 
 ### Step 3: Copy the files you want to edit.  
 The `Link Original` folder needs to have the original models in it, so before modifying anything let's make a copy of them in the `Custom Model` folder.  
