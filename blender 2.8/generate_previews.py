@@ -23,9 +23,6 @@ color_masks_dir = os.path.join(blend_file_directory, "color_masks")
 if not os.path.isdir(color_masks_dir):
   raise Exception("color_masks directory was not found.")
 preview_dir = os.path.join(blend_file_directory, "preview")
-casual_clothes_tex_path = os.path.join(blend_file_directory, "..", "linktexbci4.png")
-if not os.path.isfile(casual_clothes_tex_path):
-  raise Exception("Casual clothes texture (linktexbci4.png) was not found.")
 pupil_image_path = os.path.join(blend_file_directory, "hitomi.png")
 if not os.path.isfile(pupil_image_path):
   raise Exception("Pupil texture (hitomi.png) was not found.")
@@ -38,9 +35,46 @@ if not os.path.isfile(tex_headers_path):
 model_metadata_path = os.path.join(blend_file_directory, "metadata.txt")
 if not os.path.isfile(model_metadata_path):
   raise Exception("metadata.txt was not found.")
-casual_hair_model_path = os.path.join(blend_file_directory, "..", "katsura", "katsura.blend")
-if not os.path.isfile(casual_hair_model_path):
-  raise Exception("Casual hair model (katsura.blend) was not found.")
+
+# read the metadata file
+model_metadata = {}
+last_custom_colors_hash = None
+with open(model_metadata_path) as f:
+  for line in f.readlines():
+    match = re.search(r"^(\S[^\n\r:]*): (.+)$", line)
+    colors_hash_start_match = re.search(r"^(\S[^\n\r:]*):$", line)
+    color_match = re.search(r"^ +(\S[^\n\r:]*): (.+)$", line)
+    if match:
+      key = match.group(1)
+      val = match.group(2).strip()
+      if val.lower() == "true":
+        val = True
+      elif val.lower() == "false":
+        val = False
+      
+      model_metadata[key] = val
+    elif colors_hash_start_match:
+      key = colors_hash_start_match.group(1)
+      model_metadata[key] = OrderedDict()
+      last_custom_colors_hash = model_metadata[key]
+    elif color_match and last_custom_colors_hash is not None:
+      key = color_match.group(1)
+      val = color_match.group(2).strip()
+      last_custom_colors_hash[key] = val
+
+disable_casual_clothes = model_metadata.get("disable_casual_clothes", False)
+if disable_casual_clothes and disable_casual_clothes != "false" and disable_casual_clothes != "False":
+  disable_casual_clothes = True
+else:
+  disable_casual_clothes = False
+
+if not disable_casual_clothes:
+  casual_hair_model_path = os.path.join(blend_file_directory, "..", "katsura", "katsura.blend")
+  if not os.path.isfile(casual_hair_model_path):
+    raise Exception("Casual hair model (katsura.blend) was not found.")
+  casual_clothes_tex_path = os.path.join(blend_file_directory, "..", "linktexbci4.png")
+  if not os.path.isfile(casual_clothes_tex_path):
+    raise Exception("Casual clothes texture (linktexbci4.png) was not found.")
 temp_dir = tempfile.mkdtemp()
 
 # Need to detect if this model is based on Link, or based on Tetra/Medli, since detecting which mesh is the hat/belt buckle is different for Tetra and Medli compared to Link.
@@ -57,12 +91,13 @@ with open(bdl_file_path, "rb") as f:
 view_layer.objects.active = scene.objects[0]
 bpy.ops.object.mode_set(mode="OBJECT")
 
-# Append the casual hair mesh.
-casual_hair_model_mesh_name = "mesh-0"
-bpy.ops.wm.append(
-  directory=casual_hair_model_path + "\\Object\\", # Needs to have a trailing slash
-  filename=casual_hair_model_mesh_name,
-)
+if not disable_casual_clothes:
+  # Append the casual hair mesh.
+  casual_hair_model_mesh_name = "mesh-0"
+  bpy.ops.wm.append(
+    directory=casual_hair_model_path + "\\Object\\", # Needs to have a trailing slash
+    filename=casual_hair_model_mesh_name,
+  )
 
 # Pose the model so it's not T-posing.
 skeleton_root = scene.objects["skeleton_root"]
@@ -88,20 +123,21 @@ bones["Rclotch_jnt"].rotation_euler = (0.091450, -0.012720, -0.202730)
 bones["RlegB_jnt"].rotation_euler = (0.017057, 0.070484, 0.474697)
 bones["Rfoot_jnt"].rotation_euler = (0.089334, -0.484198, 0.215261)
 
-# Rig the casual hair mesh to the main cl.bdl skeleton, instead of the casual hair's own skeleton, so that it moves with the head when the head is posed.
-skeleton_root = scene.objects["skeleton_root"]
-casual_hair_mesh = bpy.data.objects[casual_hair_model_mesh_name + ".001"]
-casual_hair_mesh.modifiers["Armature"].object = skeleton_root
-casual_hair_mesh.vertex_groups["cl_katsura"].name = "head_jnt"
+if not disable_casual_clothes:
+  # Rig the casual hair mesh to the main cl.bdl skeleton, instead of the casual hair's own skeleton, so that it moves with the head when the head is posed.
+  skeleton_root = scene.objects["skeleton_root"]
+  casual_hair_mesh = bpy.data.objects[casual_hair_model_mesh_name + ".001"]
+  casual_hair_mesh.modifiers["Armature"].object = skeleton_root
+  casual_hair_mesh.vertex_groups["cl_katsura"].name = "head_jnt"
 
-# Finally translate and rotate the casual hair mesh so that it's not down by the player's feet.
-bpy.ops.object.mode_set(mode="EDIT")
-armature = bpy.data.objects["skeleton_root"]
-head_bone = armature.data.edit_bones["head_jnt"]
-casual_hair_mesh.location = head_bone.tail # Will be (0, 83, -0.5) if the head bone has not been moved from vanilla cl.bdl
-casual_hair_mesh.rotation_mode = "XYZ"
-casual_hair_mesh.rotation_euler.rotate_axis("X", math.radians(90.0))
-casual_hair_mesh.rotation_euler.rotate_axis("Y", math.radians(90.0))
+  # Finally translate and rotate the casual hair mesh so that it's not down by the player's feet.
+  bpy.ops.object.mode_set(mode="EDIT")
+  armature = bpy.data.objects["skeleton_root"]
+  head_bone = armature.data.edit_bones["head_jnt"]
+  casual_hair_mesh.location = head_bone.tail # Will be (0, 83, -0.5) if the head bone has not been moved from vanilla cl.bdl
+  casual_hair_mesh.rotation_mode = "XYZ"
+  casual_hair_mesh.rotation_euler.rotate_axis("X", math.radians(90.0))
+  casual_hair_mesh.rotation_euler.rotate_axis("Y", math.radians(90.0))
 
 bpy.ops.object.mode_set(mode="OBJECT")
 
@@ -199,8 +235,9 @@ for lamp_i in range(2):
 # Note that we can't select all and then scale - this works fine in Blender's UI but results in Link's pose becoming all weird and distorted if done via Python.
 bpy.ops.object.select_all(action="DESELECT")
 skeleton_root.select_set(True)
-casual_hair_skeleton_root = casual_hair_mesh.parent
-casual_hair_skeleton_root.select_set(True)
+if not disable_casual_clothes:
+  casual_hair_skeleton_root = casual_hair_mesh.parent
+  casual_hair_skeleton_root.select_set(True)
 camera.select_set(True)
 for lamp in lamps:
   lamp.select_set(True)
@@ -224,35 +261,6 @@ for tex_header in tex_headers:
     tex_min_filter_for_image_name[tex_image_name] = "Closest"
   else:
     tex_min_filter_for_image_name[tex_image_name] = "Linear"
-
-model_metadata = {}
-last_custom_colors_hash = None
-with open(model_metadata_path) as f:
-  for line in f.readlines():
-    match = re.search(r"^(\S[^\n\r:]*): (.+)$", line)
-    colors_hash_start_match = re.search(r"^(\S[^\n\r:]*):$", line)
-    color_match = re.search(r"^ +(\S[^\n\r:]*): (.+)$", line)
-    if match:
-      key = match.group(1)
-      val = match.group(2).strip()
-      if val.lower() == "true":
-        val = True
-      elif val.lower() == "false":
-        val = False
-      
-      model_metadata[key] = val
-    elif colors_hash_start_match:
-      key = colors_hash_start_match.group(1)
-      if key == "hero_custom_colors" or key == "casual_custom_colors":
-        in_custom_colors = True
-      else:
-        in_custom_colors = False
-      model_metadata[key] = OrderedDict()
-      last_custom_colors_hash = model_metadata[key]
-    elif color_match and last_custom_colors_hash is not None:
-      key = color_match.group(1)
-      val = color_match.group(2).strip()
-      last_custom_colors_hash[key] = val
 
 # Now generate the masks by replacing the model's textures with the texture masks.
 
@@ -365,13 +373,18 @@ links.new(layer1_node.outputs[0], alpha_over_node.inputs[1])
 links.new(layer2_node.outputs[0], alpha_over_node.inputs[2])
 links.new(alpha_over_node.outputs[0], output_node.inputs[0])
 
+prefix_list = ["hero"]
+if not disable_casual_clothes:
+  prefix_list = ["hero", "casual"]
 
-for prefix in ["hero", "casual"]:
+for prefix in prefix_list:
   color_mask_file_paths = glob.glob(os.path.join(color_masks_dir, "%s_*.png" % prefix))
   
   update_objects_hidden_in_render(prefix)
   
   has_colored_eyebrows = model_metadata.get("has_colored_eyebrows", False)
+  if has_colored_eyebrows == "false" or has_colored_eyebrows == "False":
+    has_colored_eyebrows = False
   hands_color_name = model_metadata.get(prefix + "_hands_color_name", "Skin")
   mouth_color_name = model_metadata.get(prefix + "_mouth_color_name", "Skin")
   hitomi_color_name = model_metadata.get(prefix + "_hitomi_color_name", "Eyes")
@@ -390,10 +403,11 @@ for prefix in ["hero", "casual"]:
       textures_to_mask.append("mayuh.1.png")
     else:
       textures_to_not_mask.append("mayuh.1.png")
-    if curr_color_name == casual_hair_color_name:
-      textures_to_mask.append("katsuraS3TC.png")
-    else:
-      textures_to_not_mask.append("katsuraS3TC.png")
+    if not disable_casual_clothes:
+      if curr_color_name == casual_hair_color_name:
+        textures_to_mask.append("katsuraS3TC.png")
+      else:
+        textures_to_not_mask.append("katsuraS3TC.png")
     if curr_color_name == mouth_color_name:
       textures_to_mask.append("mouthS3TC.1.png")
     else:
@@ -634,11 +648,12 @@ update_objects_hidden_in_render("hero")
 scene.render.filepath = os.path.join(preview_dir, "preview_hero.png")
 bpy.ops.render.render(write_still=True)
 
-# Render the casual clothes preview.
-bpy.data.images["linktexS3TC.png"].filepath = casual_clothes_tex_path
-update_objects_hidden_in_render("casual")
-scene.render.filepath = os.path.join(preview_dir, "preview_casual.png")
-bpy.ops.render.render(write_still=True)
+if not disable_casual_clothes:
+  # Render the casual clothes preview.
+  bpy.data.images["linktexS3TC.png"].filepath = casual_clothes_tex_path
+  update_objects_hidden_in_render("casual")
+  scene.render.filepath = os.path.join(preview_dir, "preview_casual.png")
+  bpy.ops.render.render(write_still=True)
 
 # Delete temp dir.
 shutil.rmtree(temp_dir)
