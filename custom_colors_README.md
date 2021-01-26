@@ -139,3 +139,11 @@ If you want to the ship's sail to be completely invisible (for if your custom sh
 ```
 hide_ship_sail: true
 ```
+
+You can change the color of certain trail effects like this:
+```
+sword_slash_trail_color: 0xFF0080FF
+boomerang_trail_color: 0x00FF8080
+arrow_trail_color: 0x0000FF40
+```
+Note that unlike the custom colors, these trail colors include alpha. So in addition to the red, green, and blue values, there's an extra byte at the end that controls the transparency of the trail. That's why each of these colors are 8 characters long instead of 6.
