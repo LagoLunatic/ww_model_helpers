@@ -25,9 +25,9 @@ When you want to edit a specific material, you first need to find it in material
 If you open materials.json and Ctrl+F for `"ear(3)"` (preferably with quotes), it will bring you to the first line of the hat's material entry. You can then edit this entry following instructions in the other parts of this guide, and then repack the model to change how the hat looks.  
 If you want to change how multiple meshes render, you have to edit each of their materials individually.  
 
-### Beginner
+## Beginner
 
-#### Face culling
+### Face culling
 
 One of the easiest to edit and most useful properties is `CullMode`, which affects which side(s) of the mesh's faces will be hidden. It has the following options:
 * `None` - Both the front and back of the mesh will be visible.
@@ -36,7 +36,7 @@ One of the easiest to edit and most useful properties is `CullMode`, which affec
 
 One use for this is when you want to have a thin mesh (such as a cape) and don't want to waste polygons creating both a front and a back for the mesh. You can have just one layer of polygons and set the face culling to `None` so that the mesh if visible from both sides.
 
-#### Binary transparency (alpha masking)
+### Binary transparency (alpha masking)
 
 Binary transparency (also known as alpha masking) allows meshes to render transparent textures. However, it only allows pixels to be either fully transparent or fully opaque - if you want to have a smooth gradient of transparency, see the [Partial transparency (alpha blending)](#partial-transparency-alpha-blending) section instead.  
 
@@ -65,9 +65,9 @@ Next, you can edit the material itself to have binary transparency. To do this, 
 ```
 That will cause pixels with an alpha value of less than 128 to be fully transparent and not render at all. You can tweak the 128 number if you want the cutoff point to be elsewhere.
 
-### Intermediate
+## Intermediate
 
-#### Partial transparency (alpha blending)
+### Partial transparency (alpha blending)
 
 Partial transparency (also known as alpha blending) allows meshes to render transparent textures. Unlike [Binary transparency (alpha masking)](#binary-transparency-alpha-masking), partial transparency supports smooth gradients of transparency, although it's a bit more finicky than binary transparency and may sometimes cause things to render strangely if not set up correctly.
 
@@ -112,11 +112,11 @@ Additionally, you will probably also want to disable binary transparency so that
 ```
 You don't necessarily have to disable binary transparency if you don't want to - it does work along with partial transparency, it just may give undesired results.
 
-#### Changing color tint
+### Changing color tint
 
 TODO
 
-#### Removing texture scrolling/scaling
+### Removing texture scrolling/scaling
 
 Sometimes, you might edit a model that animates its textures and makes them scroll or scale. If you don't want these animations to apply to your custom model, the easiest way to disable them is to replace the material's texture matrix source with the identity matrix.  
 
@@ -135,16 +135,16 @@ To do this, find the `"Tex1CoordGens"` section of the material, which may look l
 ```
 Change all of the instances of `TexMtx0`, `TexMtx1`, etc, into `Identity`.
 
-### Advanced
+## Advanced
 
-#### Shiny materials
-
-TODO
-
-#### Transparent shiny materials
+### Shiny materials
 
 TODO
 
-#### Outlines
+### Transparent shiny materials
+
+TODO
+
+### Outlines
 
 TODO
