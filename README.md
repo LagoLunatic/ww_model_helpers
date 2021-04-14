@@ -86,11 +86,14 @@ If the model displays as completely white after doing this, your model might not
 
 Once you have Link's vanilla model imported correctly, you can get to work starting to edit it to make your custom model.  
 This tutorial will not cover the process of making a model, only the process of using the scripts to convert between formats.  
-However, you can refer to [this other tutorial](https://docs.google.com/document/d/1AuI9OHi6Ni2HUzyBf_djT5wa1gzVmN2SG3jbROtrFKw) for extra information about swapping meshes and materials and rigging your custom model.
+However, you can refer to [this other tutorial](https://docs.google.com/document/d/1AuI9OHi6Ni2HUzyBf_djT5wa1gzVmN2SG3jbROtrFKw) for extra information about swapping meshes and materials and rigging your custom model.  
+
+Furthermore, if you want to edit your model's materials to change how it is rendered, you can refer to [this guide](https://github.com/LagoLunatic/ww_model_helpers/blob/master/material_editing_README.md) for that, though this is somewhat more advanced and not necessary for most models.
 
 ### Step 6: Convert the model back to Wind Waker's format.  
 Open `cl.blend` and go to File -> Export -> Collada (.dae).  
 Note: If using Blender 2.8 or higher, you must change the option that says "Y Forward" to "Z Forward" and the option that says "Z Up" to "-Y Up". If you don't do this, the model will be rotated ingame. (Not necessary in Blender 2.79.)  
+You may also need to check "Apply Global Orientation".  
 Then choose to overwrite the file `Custom Model/cl/cl.dae`.
 
 Then run this command:  
@@ -134,6 +137,8 @@ As of version 1.6.1 of the randomizer, it will no longer allow you to use custom
 ### Step 9: Set up custom colors (optional)
 
 If you want to set up colors that can be customized by the player in Wind Waker Randomizer's UI, refer to [this guide](https://github.com/LagoLunatic/ww_model_helpers/blob/master/custom_colors_README.md).
+
+And if you want to make preview images of your model so the player can see what the model will look like ahead of time, refer to [this guide](https://github.com/LagoLunatic/ww_model_helpers/blob/master/generate_previews_README.md).
 
 ## Running the scripts from source
 
