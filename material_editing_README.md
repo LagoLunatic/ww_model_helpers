@@ -3,9 +3,16 @@
 
 * [Material editing](#material-editing)
 * [Beginner](#beginner)
- * [Face culling](#face-culling)
+  * [Face culling](#face-culling)
+  * [Binary transparency (alpha masking)](#binary-transparency-alpha-masking)
 * [Intermediate](#intermediate)
+  * [Partial transparency (alpha blending)](#partial-transparency-alpha-blending)
+  * [Changing color tint](#changing-color-tint)
+  * [Removing texture scrolling/scaling](#removing-texture-scrolling-scaling)
 * [Advanced](#advanced)
+  * [Shiny materials](#shiny-materials)
+  * [Transparenct hiny materials](#transparent-shiny-materials)
+  * [Outlines](#outlines)
 
 ## Material editing
 
@@ -16,6 +23,7 @@ This won't be a fully comprehensive guide on how to do everything that is possib
 
 When you want to edit a specific material, you first need to find it in materials.json. For example, if you want to edit the material for Link's hat, select his hat mesh in your 3D modeling program of choice and look at the name of the material - it should be `ear(3)`.  
 If you open materials.json and Ctrl+F for `"ear(3)"` (preferably with quotes), it will bring you to the first line of the hat's material entry. You can then edit this entry following instructions in the other parts of this guide, and then repack the model to change how the hat looks.  
+If you want to change how multiple meshes render, you have to edit each of their materials individually.  
 
 ### Beginner
 
@@ -28,6 +36,115 @@ One of the easiest to edit and most useful properties is `CullMode`, which affec
 
 One use for this is when you want to have a thin mesh (such as a cape) and don't want to waste polygons creating both a front and a back for the mesh. You can have just one layer of polygons and set the face culling to `None` so that the mesh if visible from both sides.
 
+#### Binary transparency (alpha masking)
+
+Binary transparency (also known as alpha masking) allows meshes to render transparent textures. However, it only allows pixels to be either fully transparent or fully opaque - if you want to have a smooth gradient of transparency, see the [Partial transparency (alpha blending)](#partial-transparency-alpha-blending) section instead.  
+
+Before making the material support transparency, first make sure that the texture itself is set up to support alpha transparency. In tex_headers.json, find the texture for your mesh and look at the `Format` field. The following texture formats support transparency:
+* `IA4` (greyscale, 4 bits of alpha)
+* `IA8` (greyscale, 8 bits of alpha)
+* `RGB5A3` (color, 3 bits of alpha)
+* `RGBA32` (color, 8 bits of alpha, large filesize)
+* `C4` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
+* `C8` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
+* `C14X2` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
+* `CMPR` (color, 1 bit of alpha)
+
+If the texture doesn't use a format that supports transparency, change it to one that does.  
+CMPR may be a good choice because more than 1 bit of alpha isn't necessary for binary transparency anyway.
+
+Next, you can edit the material itself to have binary transparency. To do this, simply find the part of the material called `"AlphCompare"`, and replace that section with the following:
+```
+    "AlphCompare": {
+      "Comp0": "GEqual",
+      "Reference0": 128,
+      "Operation": "And",
+      "Comp1": "LEqual",
+      "Reference1": 255
+    },
+```
+That will cause pixels with an alpha value of less than 128 to be fully transparent and not render at all. You can tweak the 128 number if you want the cutoff point to be elsewhere.
+
 ### Intermediate
 
+#### Partial transparency (alpha blending)
+
+Partial transparency (also known as alpha blending) allows meshes to render transparent textures. Unlike [Binary transparency (alpha masking)](#binary-transparency-alpha-masking), partial transparency supports smooth gradients of transparency, although it's a bit more finicky than binary transparency and may sometimes cause things to render strangely if not set up correctly.
+
+Before making the material support transparency, first make sure that the texture itself is set up to support alpha transparency. In tex_headers.json, find the texture for your mesh and look at the `Format` field. The following texture formats support transparency:
+* `IA4` (greyscale, 4 bits of alpha)
+* `IA8` (greyscale, 8 bits of alpha)
+* `RGB5A3` (color, 3 bits of alpha)
+* `RGBA32` (color, 8 bits of alpha, large filesize)
+* `C4` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
+* `C8` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
+* `C14X2` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
+* `CMPR` (color, 1 bit of alpha)
+
+If the texture doesn't use a format that supports transparency, change it to one that does.  
+C8 with the `PaletteFormat` set to `RGB5A3` is generally a good choice as it supports both color and 3 bits of alpha, without making the filesize too large.  
+Do not use CMPR for partial transparency, as it only supports 1 bit of alpha making it effectively the same as binary transparency.
+
+Next, you can edit the material itself to have partial transparency. To do this, find the part of the material called `"BMode"`, which should also have a section called `"ZMode"` right after it. Replace both of those sections with the following:
+```
+    "BMode": {
+      "Type": "Blend",
+      "SourceFact": "SrcAlpha",
+      "DestinationFact": "InverseSrcAlpha",
+      "Operation": "Copy"
+    },
+    "ZMode": {
+      "Enable": true,
+      "Function": "LEqual",
+      "UpdateEnable": false
+    },
+```
+
+Additionally, you will probably also want to disable binary transparency so that it doesn't interfere with partial transparency. Find the `"AlphCompare"` section right above the `"BMode"` section, and replace it with the following:
+```
+    "AlphCompare": {
+      "Comp0": "Always",
+      "Reference0": 0,
+      "Operation": "Or",
+      "Comp1": "Always",
+      "Reference1": 0
+    },
+```
+You don't necessarily have to disable binary transparency if you don't want to - it does work along with partial transparency, it just may give undesired results.
+
+#### Changing color tint
+
+TODO
+
+#### Removing texture scrolling/scaling
+
+Sometimes, you might edit a model that animates its textures and makes them scroll or scale. If you don't want these animations to apply to your custom model, the easiest way to disable them is to replace the material's texture matrix source with the identity matrix.  
+
+To do this, find the `"Tex1CoordGens"` section of the material, which may look like this:
+```
+    "TexCoord1Gens": [
+      {
+        "Type": "Matrix2x4",
+        "Source": "Tex0",
+        "TexMatrixSource": "TexMtx0"
+      },
+      {
+        "Type": "SRTG",
+        "Source": "Color0",
+        "TexMatrixSource": "Identity"
+```
+Change all of the instances of `TexMtx0`, `TexMtx1`, etc, into `Identity`.
+
 ### Advanced
+
+#### Shiny materials
+
+TODO
+
+#### Transparent shiny materials
+
+TODO
+
+#### Outlines
+
+TODO
