@@ -13,6 +13,7 @@
   * [Shiny materials](#shiny-materials)
   * [Transparenct hiny materials](#transparent-shiny-materials)
   * [Outlines](#outlines)
+* [Other properties](#other-properties)
 
 ## Material editing
 
@@ -148,3 +149,11 @@ TODO
 ### Outlines
 
 TODO
+
+## Other properties
+
+If you want to edit materials in a way not covered in the guide above, you'll have to figure out how by yourself.  
+The easiest way to do this is generally to find a material from the vanilla game that already does what you want, and try copying that material (or part of it) over your custom material.  
+
+If what you want to do isn't done in any of the vanilla materials, you'll need to try various things via trial and error to see if you can get the desired effect. There's currently no comprehensive explanation of what all of the dozens of material properties do, so there's no easy way to figure that out.  
+However, SuperBMD's source code does have [lists of what possible values of each property can be](https://github.com/LagoLunatic/SuperBMD/tree/master/SuperBMDLib/source/Materials/Enums). For example, `TevOp.cs` lists out the possible values for the `ColorOp` and `AlphaOp` properties of the `TevStages` section - `Add`, `Sub`, etc.  
