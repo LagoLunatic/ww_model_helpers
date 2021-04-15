@@ -273,7 +273,7 @@ The four color input properties can have the following values:
 * `C1` - The color from the second color register, which is the second color in the `TevColors` section.
 * `C2` - The color from the third color register, which is the third color in the `TevColors` section.
 * `Konst` - One of the four colors from the `KonstColors` section. The `ColorSels` section defines which of the four it is.
-* `RasColor ` - TODO
+* `RasColor` - TODO
 * `ColorPrev` - The output color from the previous TEV stage (assuming it output to `TevPrev`).
 
 The alpha properties work basically the same as the color properties, but their values have slightly different names:
