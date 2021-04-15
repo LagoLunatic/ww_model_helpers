@@ -10,7 +10,7 @@
   * [Partial transparency (alpha blending)](#partial-transparency-alpha-blending)
   * [Modifying TEV Colors and Konst Colors](#modifying-tev-colors-and-konst-colors)
   * [Changing material color](#changing-material-color)
-  * [Removing texture scrolling/scaling](#removing-texture-scrolling-scaling)
+  * [Removing texture scrolling/scaling](#removing-texture-scrollingscaling)
 * [Advanced](#advanced)
   * [Custom TEV Stages](#custom-tev-stages)
   * [Shiny materials](#shiny-materials)
