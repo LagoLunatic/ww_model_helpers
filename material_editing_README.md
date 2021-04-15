@@ -59,7 +59,7 @@ If the texture doesn't use a format that supports transparency, change it to one
 CMPR may be a good choice because more than 1 bit of alpha isn't necessary for binary transparency anyway.
 
 Next, you can edit the material itself to have binary transparency. To do this, simply find the part of the material called `"AlphCompare"`, and replace that section with the following:
-```
+```json
     "AlphCompare": {
       "Comp0": "GEqual",
       "Reference0": 128,
@@ -75,7 +75,7 @@ That will cause pixels with an alpha value of less than 128 to be fully transpar
 If you want to get rid of the the shadows that light sources leave on a mesh, you can make it shadeless.
 
 First find the `"TevStages"` section of the material. It's not the first result when Ctrl+Fing for `"TevStages"`, but the second one - the one under the `"KonstColors"` section. You should see something like this:
-```
+```json
     "TevStages": [
       {
         "ColorInA": "C0",
@@ -108,7 +108,7 @@ C8 with the `PaletteFormat` set to `RGB5A3` is generally a good choice as it sup
 Do not use CMPR for partial transparency, as it only supports 1 bit of alpha making it effectively the same as binary transparency.
 
 Next, you can edit the material itself to have partial transparency. To do this, find the part of the material called `"BMode"`, which should also have a section called `"ZMode"` right after it. Replace both of those sections with the following:
-```
+```json
     "BMode": {
       "Type": "Blend",
       "SourceFact": "SrcAlpha",
@@ -123,7 +123,7 @@ Next, you can edit the material itself to have partial transparency. To do this,
 ```
 
 Additionally, you will probably also want to disable binary transparency so that it doesn't interfere with partial transparency. Find the `"AlphCompare"` section right above the `"BMode"` section, and replace it with the following:
-```
+```json
     "AlphCompare": {
       "Comp0": "Always",
       "Reference0": 0,
@@ -138,7 +138,7 @@ You don't necessarily have to disable binary transparency if you don't want to -
 
 Each material defines eight colors: four in the `TevColors` section, and another four in the `KonstColors` section. These can be used in TEV Stages.  
 Each of the colors will look something like this:
-```
+```json
       {
         "R": 1.0,
         "G": 1.0,
@@ -149,7 +149,7 @@ Each of the colors will look something like this:
 R, G, B, and A are short for Red, Green, Blue, and Alpha.  
 The values are on a scale from 0.0 to 1.0.  
 Many programs that deal with colors on a scale of 0 to 255 instead, so if you're converting a color from another program to the materials.json format, you may have to divide it by 255. For example, the color (64, 149, 153, 255) from another program would convert to:
-```
+```json
       {
         "R": 0.25098039215686274509803921568627,
         "G": 0.58431372549019607843137254901961,
@@ -166,7 +166,7 @@ The third color in the list corresponds to C2 and A2 in the TEV Stages.
 The konst colors work as follows:  
 Each TEV stage can only access a single konst color.  
 The `ColorSels` section defines which color that is for each TEV stage. For example:
-```
+```json
     "ColorSels": [
       "KCSel_K0",
       "KCSel_K3",
@@ -189,7 +189,7 @@ One example is if you want the texture to have a very smooth transparency gradie
 First, find the `"TevColors"` section of the material, and modify the third color in that section to be whatever color you want the material to be.  
 
 Next, find the `"TevStages"` section of the material. It's not the first result when Ctrl+Fing for `"TevStages"`, but the second one - the one under the `"KonstColors"` section. There may be multiple stages listed in this section, but you want to find the one where `ColorInB` has the value `TexColor`, like so:
-```
+```json
       {
         "ColorInA": "Zero",
         "ColorInB": "TexColor",
@@ -204,7 +204,7 @@ Alternatively, if you want to keep the texture color and simply tint it with the
 Sometimes, you might edit a model that animates its textures and makes them scroll or scale. If you don't want these animations to apply to your custom model, the easiest way to disable them is to replace the material's texture matrix source with the identity matrix.  
 
 To do this, find the `"Tex1CoordGens"` section of the material, which may look like this:
-```
+```json
     "TexCoord1Gens": [
       {
         "Type": "Matrix2x4",
@@ -225,7 +225,7 @@ Change all of the instances of `TexMtx0`, `TexMtx1`, etc, into `Identity`.
 TEV stages are the main part of the material, which control exactly what colors and alpha are rendered and how.  
 They are listed in the `"TevStages"` section of the material. It's *not* the first result when Ctrl+Fing for `"TevStages"`, but the second one - the one under the `"KonstColors"` section.  
 This section has at least one TEV stage in it, but will usually have two or three, and may have up to 16. An example of a single TEV stage is as follows:
-```
+```json
       {
         "ColorInA": "C0",
         "ColorInB": "Konst",
@@ -250,14 +250,14 @@ This section has at least one TEV stage in it, but will usually have two or thre
 
 `ColorInA`, `ColorInB`, `ColorInC`, and `ColorInD` are the input colors that the TEV stage takes. These are the four most important properties when editing TEV stages.  
 `ColorRegId` is what register the TEV stage puts its output color in. This is usually `TevPrev`.  
-`ColorOp` is operation is performed on color D. This is usually `Add`.  
+`ColorOp` is what operation is performed on color D. This is usually `Add`.  
 `ColorBias` is what to add to color D. This is usually `Zero`.  
 `ColorScale` is what to multiply the output by. This is usually `Scale_1`.  
 
-The formula the TEV stage uses to calculate the output color is as follows:
-`(((1-C)*A + C*B) Op (D + Bias)) * Scale`
-But assuming the usual values for most of those, it can be simplified to the following:
-`(((1-C)*A + C*B) + D)`
+The formula the TEV stage uses to calculate the output color is as follows:  
+`(((1-C)*A + C*B) Op (D + Bias)) * Scale`  
+But assuming the usual values for most of those, it can be simplified to the following:  
+`(((1-C)*A + C*B) + D)`  
 What this means in plain English is that color C is used to move the output color between A and B, and then D is added at the end. The higher the value of color C, the closer the output will be to color B.  
 For example, assuming A is red, B is blue, and D is black:
 * C being 0 (black) would output A (red)
