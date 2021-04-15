@@ -5,14 +5,18 @@
 * [Beginner](#beginner)
   * [Face culling](#face-culling)
   * [Binary transparency (alpha masking)](#binary-transparency-alpha-masking)
+  * [Shadeless materials](#shadeless-materials)
 * [Intermediate](#intermediate)
   * [Partial transparency (alpha blending)](#partial-transparency-alpha-blending)
-  * [Changing color tint](#changing-color-tint)
+  * [Modifying TEV Colors and Konst Colors](#modifying-tev-colors-and-konst-colors)
+  * [Changing material color](#changing-material-color)
   * [Removing texture scrolling/scaling](#removing-texture-scrolling-scaling)
 * [Advanced](#advanced)
+  * [Custom TEV Stages](#custom-tev-stages)
   * [Shiny materials](#shiny-materials)
-  * [Transparenct hiny materials](#transparent-shiny-materials)
+  * [Transparent shiny materials](#transparent-shiny-materials)
   * [Outlines](#outlines)
+  * [Vertex colors](#vertex-colors)
 * [Other properties](#other-properties)
 
 ## Material editing
@@ -33,7 +37,7 @@ If you want to change how multiple meshes render, you have to edit each of their
 One of the easiest to edit and most useful properties is `CullMode`, which affects which side(s) of the mesh's faces will be hidden. It has the following options:
 * `None` - Both the front and back of the mesh will be visible.
 * `Front` - Only the back of the mesh will be visible.
-* `None` - Only the front of the mesh will be visible.
+* `Back` - Only the front of the mesh will be visible.
 
 One use for this is when you want to have a thin mesh (such as a cape) and don't want to waste polygons creating both a front and a back for the mesh. You can have just one layer of polygons and set the face culling to `None` so that the mesh if visible from both sides.
 
@@ -45,7 +49,7 @@ Before making the material support transparency, first make sure that the textur
 * `IA4` (greyscale, 4 bits of alpha)
 * `IA8` (greyscale, 8 bits of alpha)
 * `RGB5A3` (color, 3 bits of alpha)
-* `RGBA32` (color, 8 bits of alpha, large filesize)
+* `RGBA32` (color, 8 bits of alpha, large file size)
 * `C4` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
 * `C8` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
 * `C14X2` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
@@ -66,6 +70,23 @@ Next, you can edit the material itself to have binary transparency. To do this, 
 ```
 That will cause pixels with an alpha value of less than 128 to be fully transparent and not render at all. You can tweak the 128 number if you want the cutoff point to be elsewhere.
 
+### Shadeless materials
+
+If you want to get rid of the the shadows that light sources leave on a mesh, you can make it shadeless.
+
+First find the `"TevStages"` section of the material. It's not the first result when Ctrl+Fing for `"TevStages"`, but the second one - the one under the `"KonstColors"` section. You should see something like this:
+```
+    "TevStages": [
+      {
+        "ColorInA": "C0",
+        "ColorInB": "Konst",
+        "ColorInC": "TexColor",
+        "ColorInD": "Zero",
+```
+If you want to get rid of the dark shadows on the material so that the whole mesh is evenly lit, change the value of `ColorInC` from `TexColor` to `One`.  
+Additionally, if you want ambient lighting color to have no effect on the mesh at all (i.e. so it glows in the dark and night), you can make the material be full bright by changing the value of `ColorInB` from `Konst` to `One`.  
+If you change `ColorInB` without changing `ColorInC`, you would get an effect where the shadows still exist normally, but the lit parts that aren't shaded will be full bright.
+
 ## Intermediate
 
 ### Partial transparency (alpha blending)
@@ -76,14 +97,14 @@ Before making the material support transparency, first make sure that the textur
 * `IA4` (greyscale, 4 bits of alpha)
 * `IA8` (greyscale, 8 bits of alpha)
 * `RGB5A3` (color, 3 bits of alpha)
-* `RGBA32` (color, 8 bits of alpha, large filesize)
+* `RGBA32` (color, 8 bits of alpha, large file size)
 * `C4` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
 * `C8` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
 * `C14X2` (only if `PaletteFormat` is `IA8` or `RGB5A3`)
 * `CMPR` (color, 1 bit of alpha)
 
 If the texture doesn't use a format that supports transparency, change it to one that does.  
-C8 with the `PaletteFormat` set to `RGB5A3` is generally a good choice as it supports both color and 3 bits of alpha, without making the filesize too large.  
+C8 with the `PaletteFormat` set to `RGB5A3` is generally a good choice as it supports both color and 3 bits of alpha, without making the file size too large.  
 Do not use CMPR for partial transparency, as it only supports 1 bit of alpha making it effectively the same as binary transparency.
 
 Next, you can edit the material itself to have partial transparency. To do this, find the part of the material called `"BMode"`, which should also have a section called `"ZMode"` right after it. Replace both of those sections with the following:
@@ -113,9 +134,70 @@ Additionally, you will probably also want to disable binary transparency so that
 ```
 You don't necessarily have to disable binary transparency if you don't want to - it does work along with partial transparency, it just may give undesired results.
 
-### Changing color tint
+### Modifying TEV Colors and Konst Colors
 
-TODO
+Each material defines eight colors: four in the `TevColors` section, and another four in the `KonstColors` section. These can be used in TEV Stages.  
+Each of the colors will look something like this:
+```
+      {
+        "R": 1.0,
+        "G": 1.0,
+        "B": 1.0,
+        "A": 1.0
+      },
+```
+R, G, B, and A are short for Red, Green, Blue, and Alpha.  
+The values are on a scale from 0.0 to 1.0.  
+Many programs that deal with colors on a scale of 0 to 255 instead, so if you're converting a color from another program to the materials.json format, you may have to divide it by 255. For example, the color (64, 149, 153, 255) from another program would convert to:
+```
+      {
+        "R": 0.25098039215686274509803921568627,
+        "G": 0.58431372549019607843137254901961,
+        "B": 0.6,
+        "A": 1.0
+      },
+```
+
+The TEV colors work as follows:  
+The first and fourth colors in the list cannot be used.  
+The second color in the list corresponds to C1 and A1 in the TEV Stages.  
+The third color in the list corresponds to C2 and A2 in the TEV Stages.  
+
+The konst colors work as follows:  
+Each TEV stage can only access a single konst color.  
+The `ColorSels` section defines which color that is for each TEV stage. For example:
+```
+    "ColorSels": [
+      "KCSel_K0",
+      "KCSel_K3",
+      "KCSel_K1",
+      "KCSel_K3",
+      "KCSel_K2",
+```
+That would mean the following:
+* The first TEV stage can access the first konst color (`KCSel_K0`)
+* The second TEV stage can access the fourth konst color (`KCSel_K3`)
+* The third TEV stage can access the second konst color (`KCSel_K1`)
+* The fourth TEV stage can also access the fourth konst color (`KCSel_K3`)
+* The fifth TEV stage can access the third konst color (`KCSel_K2`)
+
+### Changing material color
+
+Sometimes, you may want to give a mesh a certain color without editing the color of the texture itself.  
+One example is if you want the texture to have a very smooth transparency gradient which requires 8 bits of alpha, but you don't want to use the RGBA32 texture format as it uses up too much file size. In this case, you could use the IA8 texture format which supports 8 bits of alpha, but is greyscale, and then give the material a color to make up for the lack of color in the texture. You would still be limited to only one color, but it could be any color you want, not just grey.  
+
+First, find the `"TevColors"` section of the material, and modify the third color in that section to be whatever color you want the material to be.  
+
+Next, find the `"TevStages"` section of the material. It's not the first result when Ctrl+Fing for `"TevStages"`, but the second one - the one under the `"KonstColors"` section. There may be multiple stages listed in this section, but you want to find the one where `ColorInB` has the value `TexColor`, like so:
+```
+      {
+        "ColorInA": "Zero",
+        "ColorInB": "TexColor",
+        "ColorInC": "ColorPrev",
+        "ColorInD": "Zero",
+```
+If you want to completely replace the color of the texture with your material color (e.g. for greyscale textures), change the value of `ColorInB` from `TexColor` to `C2`.  
+Alternatively, if you want to keep the texture color and simply tint it with the material color, instead change the value of `ColorInD` from `Zero` to `C2` and leave `ColorInB` alone.
 
 ### Removing texture scrolling/scaling
 
@@ -138,6 +220,74 @@ Change all of the instances of `TexMtx0`, `TexMtx1`, etc, into `Identity`.
 
 ## Advanced
 
+### Custom TEV Stages
+
+TEV stages are the main part of the material, which control exactly what colors and alpha are rendered and how.  
+They are listed in the `"TevStages"` section of the material. It's *not* the first result when Ctrl+Fing for `"TevStages"`, but the second one - the one under the `"KonstColors"` section.  
+This section has at least one TEV stage in it, but will usually have two or three, and may have up to 16. An example of a single TEV stage is as follows:
+```
+      {
+        "ColorInA": "C0",
+        "ColorInB": "Konst",
+        "ColorInC": "TexColor",
+        "ColorInD": "Zero",
+        "ColorOp": "Add",
+        "ColorBias": "Zero",
+        "ColorScale": "Scale_1",
+        "ColorClamp": true,
+        "ColorRegId": "TevPrev",
+        "AlphaInA": "Zero",
+        "AlphaInB": "Zero",
+        "AlphaInC": "Zero",
+        "AlphaInD": "Zero",
+        "AlphaOp": "Add",
+        "AlphaBias": "Zero",
+        "AlphaScale": "Scale_1",
+        "AlphaClamp": true,
+        "AlphaRegId": "TevPrev"
+      },
+```
+
+`ColorInA`, `ColorInB`, `ColorInC`, and `ColorInD` are the input colors that the TEV stage takes. These are the four most important properties when editing TEV stages.  
+`ColorRegId` is what register the TEV stage puts its output color in. This is usually `TevPrev`.  
+`ColorOp` is operation is performed on color D. This is usually `Add`.  
+`ColorBias` is what to add to color D. This is usually `Zero`.  
+`ColorScale` is what to multiply the output by. This is usually `Scale_1`.  
+
+The formula the TEV stage uses to calculate the output color is as follows:
+`(((1-C)*A + C*B) Op (D + Bias)) * Scale`
+But assuming the usual values for most of those, it can be simplified to the following:
+`(((1-C)*A + C*B) + D)`
+What this means in plain English is that color C is used to move the output color between A and B, and then D is added at the end. The higher the value of color C, the closer the output will be to color B.  
+For example, assuming A is red, B is blue, and D is black:
+* C being 0 (black) would output A (red)
+* C being 1 (white) would output B (blue)
+* C being 0.5 (grey) would output a mix between A and B (purple)
+
+The four color input properties can have the following values:
+* `Zero` - Black (0).
+* `Half` - Grey (0.5).
+* `One` - White (1).
+* `TexColor` - The color from the texture.
+* `C0` - The color from the first color register, which is always the ambient environmental lighting color from the map.
+* `C1` - The color from the second color register, which is the second color in the `TevColors` section.
+* `C2` - The color from the third color register, which is the third color in the `TevColors` section.
+* `Konst` - One of the four colors from the `KonstColors` section. The `ColorSels` section defines which of the four it is.
+* `RasColor ` - TODO
+* `ColorPrev` - The output color from the previous TEV stage (assuming it output to `TevPrev`).
+
+The alpha properties work basically the same as the color properties, but their values have slightly different names:
+* `Zero` - Fully transparent (0).
+* `Half` - Half transparent (0.5).
+* `One` - Fully opaque (1).
+* `TexAlpha` - The alpha from the texture.
+* `A0` - The alpha from the first color register, which is always the ambient environmental lighting color from the map.
+* `A1` - The alpha from the second color register, which is the second color in the `TevColors` section.
+* `A2` - The alpha from the third color register, which is the third color in the `TevColors` section.
+* `Konst` - One of the four colors from the `KonstColors` section. The `AlphaSels` section defines which of the four it is.
+* `RasAlpha` - TODO
+* `AlphaPrev` - The output alpha from the previous TEV stage (assuming it output to `TevPrev`).
+
 ### Shiny materials
 
 TODO
@@ -147,6 +297,10 @@ TODO
 TODO
 
 ### Outlines
+
+TODO
+
+### Vertex colors
 
 TODO
 
