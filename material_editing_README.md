@@ -257,7 +257,7 @@ This section has at least one TEV stage in it, but will usually have two or thre
 The formula the TEV stage uses to calculate the output color is as follows:  
 `(((1-C)*A + C*B) Op (D + Bias)) * Scale`  
 But assuming the usual values for most of those, it can be simplified to the following:  
-`(((1-C)*A + C*B) + D)`  
+`((1-C)*A + C*B) + D`  
 What this means in plain English is that color C is used to move the output color between A and B, and then D is added at the end. The higher the value of color C, the closer the output will be to color B.  
 For example, assuming A is red, B is blue, and D is black:
 * C being 0 (black) would output A (red)
