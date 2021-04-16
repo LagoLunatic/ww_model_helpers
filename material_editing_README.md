@@ -278,8 +278,6 @@ The four color input properties can have the following values:
 
 The alpha properties work basically the same as the color properties, but their values have slightly different names:
 * `Zero` - Fully transparent (0).
-* `Half` - Half transparent (0.5).
-* `One` - Fully opaque (1).
 * `TexAlpha` - The alpha from the texture.
 * `A0` - The alpha from the first color register, which is always the ambient environmental lighting color from the map.
 * `A1` - The alpha from the second color register, which is the second color in the `TevColors` section.
