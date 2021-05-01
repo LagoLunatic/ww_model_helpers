@@ -36,7 +36,7 @@ model_metadata_path = os.path.join(blend_file_directory, "metadata.txt")
 if not os.path.isfile(model_metadata_path):
   raise Exception("metadata.txt was not found.")
 
-# read the metadata file
+# Read the metadata file.
 model_metadata = {}
 last_custom_colors_hash = None
 with open(model_metadata_path) as f:
@@ -63,11 +63,6 @@ with open(model_metadata_path) as f:
       last_custom_colors_hash[key] = val
 
 disable_casual_clothes = model_metadata.get("disable_casual_clothes", False)
-if disable_casual_clothes and disable_casual_clothes != "false" and disable_casual_clothes != "False":
-  disable_casual_clothes = True
-else:
-  disable_casual_clothes = False
-
 if not disable_casual_clothes:
   casual_hair_model_path = os.path.join(blend_file_directory, "..", "katsura", "katsura.blend")
   if not os.path.isfile(casual_hair_model_path):
@@ -373,9 +368,9 @@ links.new(layer1_node.outputs[0], alpha_over_node.inputs[1])
 links.new(layer2_node.outputs[0], alpha_over_node.inputs[2])
 links.new(alpha_over_node.outputs[0], output_node.inputs[0])
 
-prefix_list = ["hero"]
-if not disable_casual_clothes:
-  prefix_list = ["hero", "casual"]
+prefix_list = ["hero", "casual"]
+if disable_casual_clothes:
+  prefix_list.remove("casual")
 
 for prefix in prefix_list:
   color_mask_file_paths = glob.glob(os.path.join(color_masks_dir, "%s_*.png" % prefix))
@@ -383,8 +378,6 @@ for prefix in prefix_list:
   update_objects_hidden_in_render(prefix)
   
   has_colored_eyebrows = model_metadata.get("has_colored_eyebrows", False)
-  if has_colored_eyebrows == "false" or has_colored_eyebrows == "False":
-    has_colored_eyebrows = False
   hands_color_name = model_metadata.get(prefix + "_hands_color_name", "Skin")
   mouth_color_name = model_metadata.get(prefix + "_mouth_color_name", "Skin")
   hitomi_color_name = model_metadata.get(prefix + "_hitomi_color_name", "Eyes")
