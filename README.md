@@ -27,11 +27,12 @@ Then you should download SuperBMD, which is the program that actually converts t
 Extract the contents of the SuperBMD zip and put them in a folder named `SuperBMD` inside the WW Model Helpers folder - in other words, the SuperBMD folder must be next to unpack_models.exe and pack_models.exe.  
 You should also install the .NET Framework 4.6.1 if you don't already have it installed, as it is required for SuperBMD to run: https://www.microsoft.com/en-us/download/details.aspx?id=49981
 
+You will also need a 3D modeling program. I recommend Blender because it's free and is known to work for modifying Wind Waker models: https://www.blender.org/  
+Note that you must use at least version 2.79. Blender 2.78 and earlier screw up the model's skeleton when importing or exporting the .dae file.  
+Also be aware that **YOU MUST SELECT SPECIFIC MODEL IMPORT AND EXPORT SETTINGS IF USING BLENDER 2.8 OR HIGHER!** The import settings are mentioned in [Step 4](#step-4-open-the-model), and the export settings are mentioned in [Step 6](#step-6-convert-the-model-back-to-wind-wakers-format). **IF YOU IGNORE THIS WARNING AND USE THE DEFAULT SETTINGS, THE MODEL WILL APPEAR CORRUPTED INGAME, DESPITE LOOKING FINE IN BLENDER!** You must change these settings every time you import or export. (This does not apply to Blender 2.79.)  
+
 It's also recommended that you download J3D Model Viewer: https://github.com/LagoLunatic/J3D-Model-Viewer/releases/latest  
 This program allows you to view models in Wind Waker's model formats (BMD and BDL) the way they would actually appear in game. It can even load and preview animations. This makes it much faster to preview changes you make to a model than it would be to load up Wind Waker itself with the changed model.
-
-You will also need a 3D modeling program. I recommend Blender because it's free and is known to work for modifying Wind Waker models: https://www.blender.org/  
-Note that you must use at least version 2.79. Blender 2.78 and earlier screw up the model's skeleton when importing or exporting the .dae file. Blender 2.8 and higher work, though the steps you have to do are slightly different from 2.79.  
 
 ## Tutorial
 
@@ -66,7 +67,7 @@ You can find a full list of what all models and textures inside Link.arc are in 
 ### Step 4: Open the model.  
 Now you can open Link's model in a 3D modeling program. This tutorial will assume you use Blender, but other modeling programs probably work too.  
 Open Blender, delete all default objects in the scene, and go to File -> Import -> Collada (.dae).  
-**Important note: If using Blender 2.8 or higher, you must check the checkbox saying "Keep Bind Info" under import settings.** If you don't check this, the model will look like it imports correctly, but will have a screwed up skeleton ingame later when you export it, so be careful to remember to select this every time you import. (This option isn't necessary in Blender 2.79.)  
+**IMPORTANT NOTE: If using Blender 2.8 or higher, you must check the checkbox saying "Keep Bind Info" under import settings.** If you don't check this, the model will look like it imports correctly, but will have a screwed up skeleton ingame later when you export it, so be careful to remember to select this every time you import. (This option isn't necessary in Blender 2.79.)  
 Then choose the file `Custom Model/cl/cl.dae`. Now you have Link's model open.  
 You could modify it now if you want, but for the sake of this tutorial just leave it alone for now.
 
@@ -92,8 +93,7 @@ Furthermore, if you want to edit your model's materials to change how it is rend
 
 ### Step 6: Convert the model back to Wind Waker's format.  
 Open `cl.blend` and go to File -> Export -> Collada (.dae).  
-Note: If using Blender 2.8 or higher, you must change the option that says "Y Forward" to "Z Forward" and the option that says "Z Up" to "-Y Up". If you don't do this, the model will be rotated ingame. (Not necessary in Blender 2.79.)  
-You may also need to check "Apply Global Orientation".  
+**Note: If using Blender 2.8 or higher, you must change the option that says "Y Forward" to "Z Forward" and the option that says "Z Up" to "-Y Up". You may also need to check "Apply Global Orientation".** If you don't change these options, the model will be rotated ingame. (Not necessary in Blender 2.79.)  
 Then choose to overwrite the file `Custom Model/cl/cl.dae`.
 
 Then run this command:  
