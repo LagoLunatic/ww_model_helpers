@@ -31,6 +31,7 @@ with ZipFile("./dist/" + zip_name, "w") as zip:
   zip.write("README.md")
   zip.write("generate_previews_README.md")
   zip.write("custom_colors_README.md")
+  zip.write("material_editing_README.md")
   zip.write("link_models_and_textures.txt")
   
   zip.write("blender 2.79/fix_normals.py")
