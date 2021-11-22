@@ -143,6 +143,8 @@ hide_ship_sail: true
 You can change the color of certain trail effects like this:
 ```
 sword_slash_trail_color: 0xFF0080FF
+elixir_soup_sword_trail_color: 0xFF4080FF
+parrying_sword_trail_color: 0xFF6080FF
 boomerang_trail_color: 0x00FF8080
 arrow_trail_color: 0x0000FF40
 ```
