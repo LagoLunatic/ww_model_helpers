@@ -193,9 +193,6 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
         # Link needs his original INF1/JNT1 to not crash the game.
         sections_to_copy.append("INF1")
         sections_to_copy.append("JNT1")
-      if rarc_name.lower() == "Ship.arc".lower() and model_basename in ["vfncn", "vfncr"]:
-        # The boat's cannon and crane need their original JNT1 or they get rotated 90 degrees.
-        sections_to_copy.append("JNT1")
       
       link_arc.get_file_entry(model_basename + ".bdl").data = copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy)
   
