@@ -307,5 +307,8 @@ TODO
 If you want to edit materials in a way not covered in the guide above, you'll have to figure out how by yourself.  
 The easiest way to do this is generally to find a material from the vanilla game that already does what you want, and try copying that material (or part of it) over your custom material.  
 
+**Warning:** Copying other materials can sometimes result in crashes if you don't also update the material animations that animate the material to match.  
+For example, the TexMatrix1 section of ymgcs00.bdl originally has 3 entries. If you overwrite it with a material that has only 1 entry, but don't update its ymgcs00.btk animation to match, then the BTK animation will try to animate entries that don't exist anymore, resulting in memory corruption that can cause crashes or other strange issues.  
+
 If what you want to do isn't done in any of the vanilla materials, you'll need to try various things via trial and error to see if you can get the desired effect. There's currently no comprehensive explanation of what all of the dozens of material properties do, so there's no easy way to figure that out.  
 However, SuperBMD's source code does have [lists of what possible values of each property can be](https://github.com/LagoLunatic/SuperBMD/tree/master/SuperBMDLib/source/Materials/Enums). For example, `TevOp.cs` lists out the possible values for the `ColorOp` and `AlphaOp` properties of the `TevStages` section - `Add`, `Sub`, etc.  
