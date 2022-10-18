@@ -171,7 +171,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
         
         relevant_file_exts = ["dae", "png", "json"]
         for file_ext in relevant_file_exts:
-          relevant_file_paths = glob.glob(new_model_folder + "/*." + file_ext)
+          relevant_file_paths = glob.glob(glob.escape(new_model_folder) + "/*." + file_ext)
           for relevant_file_path in relevant_file_paths:
             if os.path.getmtime(relevant_file_path) > last_compile_time:
               should_rebuild_bdl = True

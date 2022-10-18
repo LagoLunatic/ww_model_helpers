@@ -271,7 +271,7 @@ if disable_casual_clothes:
   prefix_list.remove("casual")
 
 for prefix in prefix_list:
-  color_mask_file_paths = glob.glob(os.path.join(color_masks_dir, "%s_*.png" % prefix))
+  color_mask_file_paths = glob.glob(glob.escape(color_masks_dir) + ("%s_*.png" % prefix))
   
   update_objects_hidden_in_render(prefix)
   
