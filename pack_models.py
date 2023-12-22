@@ -22,9 +22,14 @@ from wwlib.j3d import ColorAnimation, AnimationTrack, AnimationKeyframe, LoopMod
 class ModelConversionError(Exception):
   pass
 
-def convert_to_bdl(base_folder, file_base_name):
+def convert_to_bdl(base_folder, file_base_name, is_bdl=True):
+  if is_bdl:
+    file_ext = ".bdl"
+  else:
+    file_ext = ".bmd"
+  
   in_dae_path      = os.path.join(base_folder, file_base_name + ".dae")
-  out_bdl_path     = os.path.join(base_folder, file_base_name + ".bdl")
+  out_bdl_path     = os.path.join(base_folder, file_base_name + file_ext)
   tex_headers_path = os.path.join(base_folder, "tex_headers.json")
   materials_path   = os.path.join(base_folder, "materials.json")
   
@@ -53,8 +58,9 @@ def convert_to_bdl(base_folder, file_base_name):
     "-x", tex_headers_path,
     "-m", materials_path,
     "-t", "all",
-    "--bdl",
   ]
+  if is_bdl:
+    command.append("--bdl")
   
   result = call(command)
   
@@ -123,7 +129,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   link_arc.read(rarc_data)
   
   
-  all_model_basenames = []
+  all_model_filenames = []
   all_texture_basenames = []
   all_bone_anim_basenames = []
   all_tev_anim_basenames = []
@@ -135,8 +141,8 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
     if file_entry.is_dir:
       continue
     basename, file_ext = os.path.splitext(file_entry.name)
-    if file_ext == ".bdl":
-      all_model_basenames.append(basename)
+    if file_ext in [".bdl", ".bmd"]:
+      all_model_filenames.append(file_entry.name)
     if file_ext == ".bti":
       all_texture_basenames.append(basename)
     if file_ext == ".bck":
@@ -155,13 +161,16 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
   
   found_any_files_to_modify = False
   
-  for model_basename in all_model_basenames:
+  for model_filename in all_model_filenames:
+    model_basename, bmd_file_ext = os.path.splitext(model_filename)
+    is_bdl = (bmd_file_ext == ".bdl")
+    
     if model_basename == "hands" and not repack_hands_model:
       continue
     
     new_model_folder = os.path.join(custom_player_folder, model_basename)
     if os.path.isdir(new_model_folder):
-      out_bdl_path = os.path.join(new_model_folder, model_basename + ".bdl")
+      out_bdl_path = os.path.join(new_model_folder, model_basename + bmd_file_ext)
       
       found_any_files_to_modify = True
       
@@ -182,11 +191,11 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
         should_rebuild_bdl = True
       
       if should_rebuild_bdl:
-        convert_to_bdl(new_model_folder, model_basename)
+        convert_to_bdl(new_model_folder, model_basename, is_bdl=is_bdl)
       else:
         print("Skipping %s" % model_basename)
       
-      orig_bdl_path = os.path.join(orig_link_folder, model_basename, model_basename + ".bdl")
+      orig_bdl_path = os.path.join(orig_link_folder, model_basename, model_basename + bmd_file_ext)
       
       sections_to_copy = []
       if rarc_name.lower() == "Link.arc".lower() and model_basename in ["cl"]:
@@ -194,7 +203,7 @@ def convert_all_player_models(orig_link_folder, custom_player_folder, repack_han
         sections_to_copy.append("INF1")
         sections_to_copy.append("JNT1")
       
-      link_arc.get_file_entry(model_basename + ".bdl").data = copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy)
+      link_arc.get_file_entry(model_basename + bmd_file_ext).data = copy_original_sections(out_bdl_path, orig_bdl_path, sections_to_copy)
   
   for texture_basename in all_texture_basenames:
     # Create texture BTI from PNG
