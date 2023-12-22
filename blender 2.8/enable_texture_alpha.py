@@ -10,4 +10,4 @@ for material in bpy.data.materials:
   image_node = material.node_tree.nodes["Image Texture"]
   bsdf_node = material.node_tree.nodes["Principled BSDF"]
   links = material.node_tree.links
-  links.new(image_node.outputs[1], bsdf_node.inputs[18])
+  links.new(image_node.outputs["Alpha"], bsdf_node.inputs["Alpha"])

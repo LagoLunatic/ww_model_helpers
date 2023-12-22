@@ -36,6 +36,42 @@ model_metadata_path = os.path.join(blend_file_directory, "metadata.txt")
 if not os.path.isfile(model_metadata_path):
   raise Exception("metadata.txt was not found.")
 
+
+if bpy.app.version[0] >= 3:
+  MATNAME_m1eyeL       = "eyeL"
+  MATNAME_m2eyeLdamA   = "eyeLdamA"
+  MATNAME_m3eyeLdamB   = "eyeLdamB"
+  MATNAME_m4eyeR       = "eyeR"
+  MATNAME_m5eyeRdamA   = "eyeRdamA"
+  MATNAME_m6eyeRdamB   = "eyeRdamB"
+  MATNAME_m8mayuL      = "mayuL"
+  MATNAME_m9mayuLdamA  = "mayuLdamA"
+  MATNAME_m10mayuLdamB = "mayuLdamB"
+  MATNAME_m12mayuRdamA = "mayuRdamA"
+  MATNAME_m13mayuRdamB = "mayuRdamB"
+  MATNAME_m11mayuR     = "mayuR"
+  MATNAME_m18ear_3_    = "ear(3)"
+  MATNAME_m20ear_5_    = "ear(5)"
+  MATNAME_m22ear_7_    = "ear(7)"
+  MATNAME_m23ear_8_    = "ear(8)"
+else:
+  MATNAME_m1eyeL       = "m1eyeL"
+  MATNAME_m2eyeLdamA   = "m2eyeLdamA"
+  MATNAME_m3eyeLdamB   = "m3eyeLdamB"
+  MATNAME_m4eyeR       = "m4eyeR"
+  MATNAME_m5eyeRdamA   = "m5eyeRdamA"
+  MATNAME_m6eyeRdamB   = "m6eyeRdamB"
+  MATNAME_m8mayuL      = "m8mayuL"
+  MATNAME_m9mayuLdamA  = "m9mayuLdamA"
+  MATNAME_m10mayuLdamB = "m10mayuLdamB"
+  MATNAME_m12mayuRdamA = "m12mayuRdamA"
+  MATNAME_m13mayuRdamB = "m13mayuRdamB"
+  MATNAME_m11mayuR     = "m11mayuR"
+  MATNAME_m18ear_3_    = "m18ear_3_"
+  MATNAME_m20ear_5_    = "m20ear_5_"
+  MATNAME_m22ear_7_    = "m22ear_7_"
+  MATNAME_m23ear_8_    = "m23ear_8_"
+
 # Read the metadata file.
 model_metadata = {}
 last_custom_colors_hash = None
@@ -77,11 +113,11 @@ with open(bdl_file_path, "rb") as f:
   f.seek(0x24)
   inf1_section_size = struct.unpack(">I", f.read(4))[0]
   if inf1_section_size == 0x460: # Tetra or Medli
-    hat_material_name = "m22ear_7_"
-    belt_buckle_material_name = "m20ear_5_"
+    hat_material_name = MATNAME_m22ear_7_
+    belt_buckle_material_name = MATNAME_m20ear_5_
   else:
-    hat_material_name = "m18ear_3_"
-    belt_buckle_material_name = "m23ear_8_"
+    hat_material_name = MATNAME_m18ear_3_
+    belt_buckle_material_name = MATNAME_m23ear_8_
 
 view_layer.objects.active = scene.objects[0]
 bpy.ops.object.mode_set(mode="OBJECT")
@@ -160,10 +196,10 @@ def update_objects_hidden_in_render(prefix):
       elif orig_tex_names_for_objs[obj] == "podAS3TC.png":
         # Hide the sword sheath mesh.
         should_hide = True
-      elif obj.data.materials[0].name in ["m2eyeLdamA", "m3eyeLdamB", "m5eyeRdamA", "m6eyeRdamB"]:
+      elif obj.data.materials[0].name in [MATNAME_m2eyeLdamA, MATNAME_m3eyeLdamB, MATNAME_m5eyeRdamA, MATNAME_m6eyeRdamB]:
         # Hide the duplicate eye meshes.
         should_hide = True
-      elif obj.data.materials[0].name in ["m9mayuLdamA", "m10mayuLdamB", "m12mayuRdamA", "m13mayuRdamB"]:
+      elif obj.data.materials[0].name in [MATNAME_m9mayuLdamA, MATNAME_m10mayuLdamB, MATNAME_m12mayuRdamA, MATNAME_m13mayuRdamB]:
         # Hide the duplicate eyebrow meshes.
         should_hide = True
       else:
@@ -282,6 +318,9 @@ orig_linktexS3TC_path = bpy.data.images["linktexS3TC.png"].filepath
 # Also make the materials all be shadeless since we don't want shading on a mask image.
 # To do this we make the material be an emission of the appropriate color - but only when the light path that hits it is a camera ray, so that the emission doesn't light up other things.
 for material in bpy.data.materials:
+  if material.node_tree is None:
+    continue
+  
   material.blend_method = "CLIP" # Enable alpha clipping
   
   nodes = material.node_tree.nodes
@@ -304,7 +343,7 @@ for material in bpy.data.materials:
     
     emission_node = nodes.new("ShaderNodeEmission")
     # Set the emission strength high so it's exactly the desired color and not washed out.
-    emission_node.inputs[1].default_value = 10
+    emission_node.inputs["Strength"].default_value = 10
     emission_node.location = (0, 600)
     
     transparent_node = nodes.new("ShaderNodeBsdfTransparent")
@@ -313,7 +352,7 @@ for material in bpy.data.materials:
     mix_shader_node = nodes.new("ShaderNodeMixShader")
     mix_shader_node.location = (200, 600)
     
-    links.new(mask_image_node.outputs[0], emission_node.inputs[0])
+    links.new(mask_image_node.outputs[0], emission_node.inputs["Color"])
     links.new(mask_image_node.outputs[1], mix_shader_node.inputs[0])
     links.new(transparent_node.outputs[0], mix_shader_node.inputs[1])
     links.new(emission_node.outputs[0], mix_shader_node.inputs[2])
@@ -333,7 +372,7 @@ scene.collection.children.link(eyes_and_eyebrows_collection)
 # Move the eyes, eyebrows, and hair into their appropriate collections.
 for obj in scene.objects:
   if obj.data.__class__ == bpy.types.Mesh:
-    if obj.data.materials[0].name in ["m1eyeL", "m4eyeR", "m8mayuL", "m11mayuR"]:
+    if obj.data.materials[0].name in [MATNAME_m1eyeL, MATNAME_m4eyeR, MATNAME_m8mayuL, MATNAME_m11mayuR]:
       eyes_and_eyebrows_collection.objects.link(obj)
       orig_collection.objects.unlink(obj)
   elif isinstance(obj.data, bpy.types.Light):
@@ -538,9 +577,15 @@ for prefix in prefix_list:
 
 # Now render the actual preview images, with proper toon shading.
 scene.render.engine = "CYCLES"
-world.light_settings.use_ambient_occlusion = True
+if bpy.app.version[0] < 4:
+  world.light_settings.use_ambient_occlusion = True
 world.light_settings.ao_factor = 0.3
 scene.cycles.filter_width = 0.01 # Effectively disables antialiasing where meshes meet
+
+if bpy.app.version[0] >= 3:
+  bg = world.node_tree.nodes['Background']
+  bg.inputs["Color"].default_value[:3] = (0.25, 0.25, 0.25)
+  bg.inputs["Strength"].default_value = 1.0
 
 # Create the Cycles materials for all objects.
 done_mat_names = []
@@ -603,7 +648,7 @@ for obj in scene.objects:
       link = links.new(image_node.outputs[0], mixrgb_node.inputs[1])
       link = links.new(pupil_image_node.outputs[0], mixrgb_node.inputs[2])
       link = links.new(pupil_image_node.outputs[1], mixrgb_node.inputs[0])
-      link = links.new(mixrgb_node.outputs[0], toon_node.inputs[0])
+      link = links.new(mixrgb_node.outputs[0], toon_node.inputs["Color"])
       link = links.new(image_node.outputs[1], greater_than_node.inputs[0])
       link = links.new(greater_than_node.outputs[0], mix_node.inputs[0])
       link = links.new(transparent_node.outputs[0], mix_node.inputs[1])
@@ -620,7 +665,7 @@ for obj in scene.objects:
       greater_than_node.inputs[1].default_value = 0.25 # This is to make the transparency binary
       greater_than_node.location = (400, 0)
       
-      link = links.new(image_node.outputs[0], toon_node.inputs[0])
+      link = links.new(image_node.outputs[0], toon_node.inputs["Color"])
       link = links.new(image_node.outputs[1], greater_than_node.inputs[0])
       link = links.new(greater_than_node.outputs[0], mix_node.inputs[0])
       link = links.new(transparent_node.outputs[0], mix_node.inputs[1])
