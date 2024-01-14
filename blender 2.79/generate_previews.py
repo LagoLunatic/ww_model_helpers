@@ -264,6 +264,24 @@ hitomi_image = bpy.data.images["hitomi.png"]
 hitomi_width, hitomi_height = hitomi_image.size
 hitomi_pixels = hitomi_image.pixels[:] # Convert the image's pixels to a tuple to increase performance when reading from it
 
+def map_image_pixel(index_a, image_a, image_b, pixels_b):
+  a_width, a_height = image_a.size
+  b_width, b_height = image_b.size
+  tex_x = index_a % a_width
+  tex_y = index_a // a_width
+  x = tex_x / a_width
+  y = tex_y / a_height
+  b_x = int(x * b_width)
+  b_y = int(y * b_height)
+  b_index = (b_y*b_width) + b_x
+  
+  b_r = pixels_b[b_index*4+0]
+  b_g = pixels_b[b_index*4+1]
+  b_b = pixels_b[b_index*4+2]
+  b_a = pixels_b[b_index*4+3]
+  
+  return (b_r, b_g, b_b, b_a)
+
 orig_linktexS3TC_path = bpy.data.images["linktexS3TC.png"].filepath
 
 prefix_list = ["hero", "casual"]
@@ -333,17 +351,8 @@ for prefix in prefix_list:
             orig_b = tex_pixels[i*4+2]
             
             # eyeh.1 and hitomi might not be the same resolution, so we need to map the index in eyeh.1 to the index in hitomi.
-            tex_x = i % tex_width
-            tex_y = i // tex_width
-            x = tex_x / tex_width
-            y = tex_y / tex_height
-            hitomi_x = int(x * hitomi_width)
-            hitomi_y = int(y * hitomi_height)
-            hitomi_i = (hitomi_y*hitomi_width) + hitomi_x
+            hitomi_r, hitomi_g, hitomi_b, _ = map_image_pixel(i, tex_image, hitomi_image, hitomi_pixels)
             
-            hitomi_r = hitomi_pixels[hitomi_i*4+0]
-            hitomi_g = hitomi_pixels[hitomi_i*4+1]
-            hitomi_b = hitomi_pixels[hitomi_i*4+2]
             eye_is_not_white = (orig_r <= 0.5 and orig_g <= 0.5 and orig_b <= 0.5)
             hitomi_is_white = (hitomi_r > 0.5 and hitomi_g > 0.5 and hitomi_r > 0.5)
             if eye_is_not_white or hitomi_is_white:
@@ -366,16 +375,13 @@ for prefix in prefix_list:
       tex_pixels = tex_image.pixels[:]
       new_pixels = []
       for i in range(len(mask_image.pixels)//4):
-        orig_alpha = tex_pixels[i*4+3]
-        r = mask_pixels[i*4]
+        orig_r, orig_g, orig_b, orig_alpha = map_image_pixel(i, mask_image, tex_image, tex_pixels)
+        r = mask_pixels[i*4+0]
         g = mask_pixels[i*4+1]
         b = mask_pixels[i*4+2]
         
         if texture_name == "eyeh.1.png":
           # For the pupil mask, we don't want any parts of the pupil that extend outside of the whites of the eyes to be masked for the preview.
-          orig_r = tex_pixels[i*4+0]
-          orig_g = tex_pixels[i*4+1]
-          orig_b = tex_pixels[i*4+2]
           if orig_r <= 0.5 and orig_g <= 0.5 and orig_b <= 0.5:
             r = 1.0
             g = 1.0
