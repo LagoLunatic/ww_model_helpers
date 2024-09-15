@@ -268,7 +268,7 @@ The four color input properties can have the following values:
 * `Zero` - Black (0).
 * `Half` - Grey (0.5).
 * `One` - White (1).
-* `TexColor` - The color from the texture.
+* `TexColor` - The color from the texture specified in the `TevOrders` section.
 * `C0` - The color from the first color register, which is always the ambient environmental lighting color from the map.
 * `C1` - The color from the second color register, which is the second color in the `TevColors` section.
 * `C2` - The color from the third color register, which is the third color in the `TevColors` section.
@@ -278,7 +278,7 @@ The four color input properties can have the following values:
 
 The alpha properties work basically the same as the color properties, but their values have slightly different names:
 * `Zero` - Fully transparent (0).
-* `TexAlpha` - The alpha from the texture.
+* `TexAlpha` - The alpha from the texture specified in the `TevOrders` section.
 * `A0` - The alpha from the first color register, which is always the ambient environmental lighting color from the map.
 * `A1` - The alpha from the second color register, which is the second color in the `TevColors` section.
 * `A2` - The alpha from the third color register, which is the third color in the `TevColors` section.
