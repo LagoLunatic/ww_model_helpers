@@ -175,7 +175,7 @@ The `ColorSels` section defines which color that is for each TEV stage. For exam
       "KCSel_K2",
 ```
 That would mean the following:
-* The first TEV stage can access the first konst color (`KCSel_K0`)
+* The first TEV stage can access the first konst color (`KCSel_K0`) (the environmental key light color from the map)
 * The second TEV stage can access the fourth konst color (`KCSel_K3`)
 * The third TEV stage can access the second konst color (`KCSel_K1`)
 * The fourth TEV stage can also access the fourth konst color (`KCSel_K3`)
